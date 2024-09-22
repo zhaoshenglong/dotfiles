@@ -43,7 +43,7 @@ setmetatable(M, {
     if dep then
       local mod = type(dep) == "table" and dep[1] or dep
       local key = type(dep) == "table" and dep[2] or k
-      M.deprecate([[LazyVim.]] .. k, [[LazyVim.]] .. mod .. "." .. key)
+      M.deprecate([[LoongVim.]] .. k, [[LoongVim.]] .. mod .. "." .. key)
       ---@diagnostic disable-next-line: no-unknown
       t[mod] = require("lazyvim.util." .. mod) -- load here to prevent loops
       return t[mod][key]
@@ -123,7 +123,7 @@ end
 
 function M.deprecate(old, new)
   M.warn(("`%s` is deprecated. Please use `%s` instead"):format(old, new), {
-    title = "LazyVim",
+    title = "LoongVim",
     once = true,
     stacktrace = true,
     stacklevel = 6,
@@ -263,7 +263,7 @@ end
 for _, level in ipairs({ "info", "warn", "error" }) do
   M[level] = function(msg, opts)
     opts = opts or {}
-    opts.title = opts.title or "DragonVim"
+    opts.title = opts.title or "LoongVim"
     return LazyUtil[level](msg, opts)
   end
 end

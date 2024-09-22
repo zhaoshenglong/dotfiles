@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Set the bash line edit mode to vi
+set -o vi
+

@@ -1,7 +1,4 @@
-_G.DragonVim = require("utils")
-
 local M = {}
-DragonVim.config = M
 
 local defaults = {
   -- colorscheme can be a string like `catppuccin` or a function that will load the colorscheme
@@ -102,20 +99,24 @@ local options
 
 ---@param opts? DragonVimOptions
 function M.setup(opts)
-  options = vim.tbl_deep_extend("foce", defaults, opts or {}) or {}
+  options = vim.tbl_deep_extend("force", defaults, opts or {}) or {}
 
   require("config.options")
   require("config.keymaps")
   require("config.autocmds")
   require("config.lazy")
+
+  -- _G.LoongVim = require("utils")
+  -- LoongVim.config = M
+
   if type(M.colorscheme) == "function" then
     M.colorscheme()
   else
-    vm.cmd.corlorscheme(M.colorscheme)
+    vim.cmd.colorscheme(M.colorscheme)
   end
 
-  -- DragonVim.format.setup()
-  -- DragonVim.root.setup()
+  -- LoongVim.format.setup()
+  -- LoongVim.root.setup()
 
 end
 
