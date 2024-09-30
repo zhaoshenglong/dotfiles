@@ -104,8 +104,6 @@ def main():
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    logger.info("Test info log")
-    logger.debug("Test debug log")
     install(args.targets, do_backup=args.backup)
 
 

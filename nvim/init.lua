@@ -1,5 +1,2 @@
-
-require("config").setup({
-  colorscheme = "tokyonight"
-})
-
+-- bootstrap lazy.nvim, LoongVim and other plugins
+require("config.lazy")
