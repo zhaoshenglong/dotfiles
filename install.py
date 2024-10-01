@@ -44,15 +44,19 @@ def install(
             install_bash(do_backup=do_backup)
 
 
-def back_neovim():
-    file.backup(var.NeoVimConfigPath)
-    file.backup(var.NeoVimDataPath)
-    file.backup(var.NeoVimStatePath)
+def back_neovim(do_backup: bool = True):
+    if do_backup:
+        file.backup(var.NeoVimConfigPath)
+        file.backup(var.NeoVimDataPath)
+        file.backup(var.NeoVimStatePath)
+    else:
+        file.remove(var.NeoVimConfigPath, recursive=True)
+        file.remove(var.NeoVimDataPath, recursive=True)
+        file.remove(var.NeoVimStatePath, recursive=True)
 
 
 def install_neovim(do_backup: bool = True):
-    if do_backup:
-        back_neovim()
+    back_neovim(do_backup)
     logger.info(f"Copying files from {var.NeoVimFiles} to {var.NeoVimConfigPath}")
     file.copy(var.NeoVimFiles, var.NeoVimConfigPath, recursive=True, exclusive=False)
     logger.info(f"Installing Neovim completed!")
