@@ -1,0 +1,19 @@
+{
+  "extras": [
+    "loongvim.plugins.extras.coding.yanky",
+    "loongvim.plugins.extras.editor.dial",
+    "loongvim.plugins.extras.lang.cmake",
+    "loongvim.plugins.extras.lang.docker",
+    "loongvim.plugins.extras.lang.git",
+    "loongvim.plugins.extras.lang.go",
+    "loongvim.plugins.extras.lang.json",
+    "loongvim.plugins.extras.lang.markdown",
+    "loongvim.plugins.extras.lang.python",
+    "loongvim.plugins.extras.lang.rust",
+    "loongvim.plugins.extras.lang.sql",
+    "loongvim.plugins.extras.lang.toml",
+    "loongvim.plugins.extras.lang.yaml",
+    "loongvim.plugins.extras.util.dot"
+  ],
+  "version": 6
+}
