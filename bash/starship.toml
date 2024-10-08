@@ -37,7 +37,7 @@ disabled = false
 # represents the current operating system
 [os]
 style = "fg:#FFFFFF bg:#9A348E"
-disabled = false                # Disabled by default
+disabled = false # Disabled by default
 
 [os.symbols]
 Manjaro = "  "
@@ -48,16 +48,16 @@ read_only = " "
 format = "[ ($read_only)]($style)[$path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
-truncate_to_repo = false
+truncate_to_repo=false
 fish_style_pwd_dir_length = 1
 
 [git_branch]
-symbol = ""
-style = "fg:#FFFFFF bg:#FCA17D"
+symbol = " "
+style = "fg:#1b1b1b bg:#FCA17D"
 format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "fg:#FFFFFF bg:#FCA17D"
+style = "fg:#1b1b1b bg:#FCA17D"
 untracked = "?$count"
 modified = "!$count"
 conflicted = "=$count"
@@ -97,3 +97,4 @@ format = '[ $symbol ($version) ]($style)'
 format = "[ $hostname ]($style)"
 ssh_only = false
 style = "fg:#FFFFFF bg:#33658A"
+

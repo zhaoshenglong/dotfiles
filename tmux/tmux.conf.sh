@@ -438,9 +438,13 @@ _apply_24b() {
 }
 
 _apply_bindings() {
-  cfg=$(mktemp) && trap 'rm -f $cfg*' EXIT
+  trap 'echo "Error on line $LINENO"' ERR
+  cfg=$(mktemp) # && trap 'rm -f $cfg*' EXIT
+  echo "cfg is $cfg"
 
   tmux list-keys | grep -vF 'TMUX_CONF_LOCAL' | grep -E 'new-window|split(-|_)window|new-session|copy-selection|copy-pipe' >"$cfg"
+
+  cp "$cfg" "$HOME/tmpcfg"
 
   # tmux 3.0 doesn't include 02254d1e5c881be95fd2fc37b4c4209640b6b266 and the
   # output of list-keys can be truncated
@@ -523,15 +527,16 @@ _apply_bindings() {
   fi
 
   tmux_conf_copy_to_os_clipboard=${tmux_conf_copy_to_os_clipboard:-false}
-  command -v xsel >/dev/null 2>&1 && command='xsel -i -b'
-  ! command -v xsel >/dev/null 2>&1 && command -v xclip >/dev/null 2>&1 && command='xclip -i -selection clipboard > \/dev\/null 2>\&1'
-  command -v wl-copy >/dev/null 2>&1 && command='wl-copy'
-  command -v pbcopy >/dev/null 2>&1 && command='pbcopy'
-  command -v reattach-to-user-namespace >/dev/null 2>&1 && command='reattach-to-user-namespace pbcopy'
-  command -v clip.exe >/dev/null 2>&1 && command='clip\.exe'
+  [ -z "$command" ] && command -v xsel >/dev/null 2>&1 && command='xsel -i -b'
+  [ -z "$command" ] && command -v xclip >/dev/null 2>&1 && command='xclip -i -selection clipboard > \/dev\/null 2>\&1'
+  [ -z "$command" ] && command -v wl-copy >/dev/null 2>&1 && command='wl-copy'
+  [ -z "$command" ] && command -v pbcopy >/dev/null 2>&1 && command='pbcopy'
+  [ -z "$command" ] && command -v reattach-to-user-namespace >/dev/null 2>&1 && command='reattach-to-user-namespace pbcopy'
+  [ -z "$command" ] && command -v clip.exe >/dev/null 2>&1 && command='clip\.exe'
   [ -c /dev/clipboard ] && command='cat > \/dev\/clipboard'
 
   if [ -n "$command" ]; then
+    echo "FUCKLKKKKKKKK, command is ${command}"
     if ! _is_disabled "$tmux_conf_copy_to_os_clipboard" && _is_true "$tmux_conf_copy_to_os_clipboard"; then
       perl -p -i -e "s/(?!.*?$command)\bcopy-(?:selection|pipe)(-and-cancel)?\b/copy-pipe\1 '$command'/g" "$cfg"
     else
@@ -548,7 +553,9 @@ _apply_bindings() {
     '{i = $2 == "-T" ? 4 : 5; gsub(/^[;]$/, "\\\\&", $i); gsub(/^[$"#~]$/, "'"'"'&'"'"'", $i); gsub(/^['"'"']$/, "\"&\"", $i); print}' >"$cfg.in"
 
   # ignore bindings with errors
+  echo "Before sourcing the tmux file"
   if ! tmux source-file "$cfg.in"; then
+    echo "Sourcing the tmux file failed"
     if tmux source-file -v /dev/null 2>/dev/null; then
       verbose_flag='-v'
     fi
@@ -557,6 +564,7 @@ _apply_bindings() {
       perl -n -i -e "if ($. != $line) { print }" "$cfg.in"
     done
   fi
+  echo "After sourcing the tmux file"
 }
 
 _apply_theme() {
@@ -1195,14 +1203,24 @@ _apply_configuration() {
   tmux setenv -gu tmux_conf_dummy $(printenv | grep -E -o '^tmux_conf_[^=]+' | awk '{printf "; setenv -gu %s", $0}')
 }
 
-_urlview() {
-  tmux capture-pane -J -S - -E - -b "urlview-$1" -t "$1"
-  tmux split-window "'$TMUX_PROGRAM' ${TMUX_SOCKET:+-S "$TMUX_SOCKET"} show-buffer -b 'urlview-$1' | urlview || true; '$TMUX_PROGRAM' ${TMUX_SOCKET:+-S "$TMUX_SOCKET"} delete-buffer -b 'urlview-$1'"
-}
+_toggle_clock() {
+  window_name="__clock_window"
+  current_session=${1:-$(tmux display -p '#{session_name}')}
+  clock_window=$(tmux list-windows -t "$current_session" -F '#{window_name} #{window_id}' | grep -E -o "^$window_name .*$" | cut -d ' ' -f2- || true)
 
-_fpp() {
-  tmux capture-pane -J -S - -E - -b "fpp-$1" -t "$1"
-  tmux split-window -c "$2" "'$TMUX_PROGRAM' ${TMUX_SOCKET:+-S "$TMUX_SOCKET"} show-buffer -b 'fpp-$1' | fpp || true; '$TMUX_PROGRAM' ${TMUX_SOCKET:+-S "$TMUX_SOCKET"} delete-buffer -b 'fpp-$1'"
+  if [ -z "$clock_window" ]; then
+    tmux new-window -n "$window_name" \; \
+      split-window -h \; \
+      split-window -v \; \
+      select-pane -L \; \
+      split-window -v \; \
+      send-keys -t 1 'TZ=UTC tock -sc' C-m \; \
+      send-keys -t 2 'TZ=America/New_York tock -sc' C-m \; \
+      send-keys -t 3 'TZ=Asia/Tokyo tock -sc' C-m \; \
+      send-keys -t 4 'TZ=Europe/London tock -sc' C-m
+  else
+    tmux kill-window -t "$clock_window"
+  fi
 }
 
 "$@"

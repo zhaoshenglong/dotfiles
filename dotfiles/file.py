@@ -1,3 +1,4 @@
+from genericpath import isdir
 import logging
 import os
 import shutil
@@ -30,11 +31,14 @@ class FileState:
         return False
 
 
-def copy(src: os.PathLike, dst: os.PathLike, recursive=False, exclusive=True):
-    logger.debug(
-        f"Copying {src} to {dst}, recursive={recursive}, exclusive={exclusive}"
-    )
-    return shutil.copytree(src, dst, dirs_exist_ok=not exclusive)
+def copy(src: os.PathLike, dst: os.PathLike, exclusive=True):
+    logger.debug(f"Copying {src} to {dst}, exclusive={exclusive}")
+    if not path.exists(src):
+        logger.error(f"{src} not found")
+        raise FileNotFoundError(f"{src} not found")
+    if path.isdir(src):
+        return shutil.copytree(src, dst, dirs_exist_ok=not exclusive)
+    return shutil.copyfile(src, dst)
 
 
 def move(src: os.PathLike, dst: os.PathLike):
@@ -44,6 +48,9 @@ def move(src: os.PathLike, dst: os.PathLike):
 
 def remove(dst: os.PathLike, recursive=False):
     logger.debug(f"Removing file {dst}, recursive={recursive}")
+    if not path.exists(dst):
+        logger.debug(f"{dst} not found, do nothing")
+        return
     if not recursive:
         os.remove(dst)
     else:

@@ -62,9 +62,7 @@ class NeovimManager(TargetManager):
 
     def install(self):
         logger.info(f"Copying files from {var.NeoVimFiles} to {var.NeoVimConfigPath}")
-        file.copy(
-            var.NeoVimFiles, var.NeoVimConfigPath, recursive=True, exclusive=False
-        )
+        file.copy(var.NeoVimFiles, var.NeoVimConfigPath, exclusive=False)
         logger.info("Installing Neovim completed!")
 
 
@@ -83,7 +81,7 @@ class TmuxManager(TargetManager):
 
     def install(self):
         logger.info(f"Copying files from {var.TmuxFiles} to {var.TmuxConfigPath}")
-        file.copy(var.TmuxFiles, var.TmuxConfigPath, recursive=True, exclusive=False)
+        file.copy(var.TmuxFiles, var.TmuxConfigPath, exclusive=False)
         logger.info("Installing Tmux completed!")
 
 

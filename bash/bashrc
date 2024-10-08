@@ -31,6 +31,20 @@ _install_fzf() {
   fi
 }
 
+_safe_alias() {
+  if [ $# -ne 1 ]; then
+    echo "missing alias arguments"
+  fi
+  local -r arg=$1
+  local ali
+  local cmd
+  ali=${arg%%=*} # removes everything after the first '='
+  cmd=${arg#*=}  # removes everything before the first '='
+  if ! alias "$ali" &>/dev/null; then
+    eval "alias $ali=\"$cmd\""
+  fi
+}
+
 # Start of the main entrypoint
 # shellcheck disable=SC1090
 [[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach
@@ -42,10 +56,11 @@ _install_rust
 for tool in "${RUST_TOOLS[@]}"; do
   _cargo_install "$tool"
 done
+_safe_alias ls="ls $LS_OPTIONS"
 
 ble-import -d integration/fzf-completion
 ble-import -d integration/fzf-key-bindings
 
-[[ ! ${BLE_VERSION-} ]] || ble-attach
-
 eval "$(~/.cargo/bin/starship init bash)"
+
+[[ ! ${BLE_VERSION-} ]] || ble-attach
