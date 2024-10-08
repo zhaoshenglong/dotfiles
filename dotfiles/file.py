@@ -2,10 +2,32 @@ import logging
 import os
 import shutil
 import time
+from dataclasses import dataclass
 from os import path
 from pathlib import Path
+from typing import Iterable
 
 logger = logging.getLogger("DotFiles")
+
+
+@dataclass
+class FileState:
+    neovim: Iterable[str]
+    tmux: Iterable[str]
+    bash: Iterable[str]
+
+    def __init__(self) -> None:
+        pass
+
+    @classmethod
+    def open(cls, mode="r"):
+        pass
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
 
 
 def copy(src: os.PathLike, dst: os.PathLike, recursive=False, exclusive=True):
@@ -28,16 +50,17 @@ def remove(dst: os.PathLike, recursive=False):
         shutil.rmtree(dst)
 
 
-def backup(target_path: os.PathLike):
+def backup(target_path: os.PathLike) -> Path | None:
     parent_path = Path(target_path).parent
     last_component = Path(target_path).name
-    backup_path = path.join(parent_path, f"{last_component}.bak.{time.time()}")
+    backup_path = Path(path.join(parent_path, f"{last_component}.bak.{time.time()}"))
     logger.debug(f"Backing up {target_path} to {backup_path}")
     try:
         move(target_path, backup_path)
+        return backup_path
     except FileNotFoundError:
-        pass
+        return None
 
 
-def timestamp():
+def restore():
     pass

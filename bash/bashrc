@@ -1,5 +1,51 @@
 #!/usr/bin/env bash
 
-# Set the bash line edit mode to vi
+BLESH="$HOME/.local/share/blesh/ble.sh"
+RUST_TOOLS=("starship" "cloc" "flamegraph")
+
+_install_ble() {
+  if ! [ -f "$BLESH" ]; then
+    wget -O - https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly.tar.xz | tar xJf -
+    bash ble-nightly/ble.sh --install ~/.local/share
+    rm -rf ble-nightly
+  fi
+}
+
+_install_rust() {
+  if ! cargo version >/dev/null 2>&1; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  fi
+}
+
+_cargo_install() {
+  local -r tool="$1"
+  if ! which "$tool" >/dev/null 2>&1; then
+    cargo install "$tool" --locked
+  fi
+}
+
+_install_fzf() {
+  if ! [ -f ~/.fzf.bash ]; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+  fi
+}
+
+# Start of the main entrypoint
+# shellcheck disable=SC1090
+[[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach
+
 set -o vi
 
+_install_ble
+_install_rust
+for tool in "${RUST_TOOLS[@]}"; do
+  _cargo_install "$tool"
+done
+
+ble-import -d integration/fzf-completion
+ble-import -d integration/fzf-key-bindings
+
+[[ ! ${BLE_VERSION-} ]] || ble-attach
+
+eval "$(~/.cargo/bin/starship init bash)"

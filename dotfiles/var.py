@@ -1,16 +1,26 @@
-import os
 from os import path
 from pathlib import Path
 
 HOME = path.expanduser("~")
 ROOT = Path(__file__).parent.parent
 
-XDG_CONFIG_DIR = f"{HOME}/.config"
-XDG_DATA_DIR = f"{HOME}/.local/share"
-XDG_STATE_DIR = f"{HOME}/.local/state"
+XDG_CONFIG_DIR = Path(path.join(HOME, ".config"))
+XDG_DATA_DIR = Path(path.join(HOME, ".local/share"))
+XDG_STATE_DIR = Path(path.join(HOME, ".local/state"))
 
 # NeoVim
-NeoVimConfigPath = path.join(XDG_CONFIG_DIR, "nvim")
-NeoVimDataPath = path.join(XDG_DATA_DIR, "nvim")
-NeoVimStatePath = path.join(XDG_STATE_DIR, "nvim")
-NeoVimFiles = path.join(ROOT, "nvim")
+NeoVimConfigPath = Path(path.join(XDG_CONFIG_DIR, "nvim"))
+NeoVimDataPath = Path(path.join(XDG_DATA_DIR, "nvim"))
+NeoVimStatePath = Path(path.join(XDG_STATE_DIR, "nvim"))
+NeoVimFiles = Path(path.join(ROOT, "nvim"))
+
+
+# Tmux
+TmuxConfigPath = Path(path.join(XDG_CONFIG_DIR, "tmux"))
+TmuxFiles = Path(path.join(ROOT, "tmux"))
+
+# Bash
+BashScriptPath = Path(path.join(HOME, ".bashrc"))
+BashFiles = Path(path.join(ROOT, "bash", "bashrc"))
+StarshipPath = Path(path.join(XDG_CONFIG_DIR, "starship.toml"))
+StarshipFiles = Path(path.join(ROOT, "bash", "starship.toml"))

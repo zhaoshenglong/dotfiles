@@ -13,6 +13,7 @@
     "loongvim.plugins.extras.lang.sql",
     "loongvim.plugins.extras.lang.toml",
     "loongvim.plugins.extras.lang.yaml",
+    "loongvim.plugins.extras.lang.clangd",
     "loongvim.plugins.extras.util.dot"
   ],
   "version": 6

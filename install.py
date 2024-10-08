@@ -3,12 +3,11 @@
 
 import argparse
 import logging
-from enum import StrEnum
 from typing import Iterable
 
 from rich.logging import RichHandler
 
-from dotfiles import file, var
+from dotfiles.target import Target, TargetManager
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,56 +17,27 @@ logging.basicConfig(
 logger = logging.getLogger("DotFiles")
 
 
-class Target(StrEnum):
-    NeoVim = "neovim"
-    Tmux = "tmux"
-    Bash = "bash"
-
-
 def install(
     targets: None | Iterable[str] | Iterable[Target] | str | Target,
-    do_backup: bool = True,
+    do_backup: bool = False,
+    do_restore: bool = False,
+    do_cleanup: bool = False,
 ):
     if not targets:
         logger.info("No targets specified, do nothing")
         return
-    if isinstance(targets, Iterable) and not isinstance(targets, str):
-        for target in targets:
-            install(target, do_backup=do_backup)
-        return
-    match Target(targets):
-        case Target.NeoVim:
-            install_neovim(do_backup=do_backup)
-        case Target.Tmux:
-            install_tmux(do_backup=do_backup)
-        case Target.Bash:
-            install_bash(do_backup=do_backup)
+    if isinstance(targets, str) or isinstance(targets, Target):
+        targets = [Target(targets)]
 
-
-def back_neovim(do_backup: bool = True):
-    if do_backup:
-        file.backup(var.NeoVimConfigPath)
-        file.backup(var.NeoVimDataPath)
-        file.backup(var.NeoVimStatePath)
-    else:
-        file.remove(var.NeoVimConfigPath, recursive=True)
-        file.remove(var.NeoVimDataPath, recursive=True)
-        file.remove(var.NeoVimStatePath, recursive=True)
-
-
-def install_neovim(do_backup: bool = True):
-    back_neovim(do_backup)
-    logger.info(f"Copying files from {var.NeoVimFiles} to {var.NeoVimConfigPath}")
-    file.copy(var.NeoVimFiles, var.NeoVimConfigPath, recursive=True, exclusive=False)
-    logger.info(f"Installing Neovim completed!")
-
-
-def install_tmux(do_backup: bool = True):
-    raise NotImplementedError("installing tmux is not implemented")
-
-
-def install_bash(do_backup: bool = True):
-    raise NotImplementedError("installing bash is not implemented")
+    for tt in targets:
+        mgr = TargetManager.create(Target(tt))
+        if do_backup:
+            mgr.backup()
+        if do_restore:
+            mgr.restore()
+        if do_cleanup:
+            mgr.cleanup()
+        mgr.install()
 
 
 def main():
@@ -86,6 +56,7 @@ def main():
         ),
     )
     parser.add_argument(
+        "-b",
         "--backup",
         action="store_true",
         help=(
@@ -103,12 +74,29 @@ def main():
             "The default logging level is INFO"
         ),
     )
+    parser.add_argument(
+        "-r",
+        "--restore",
+        action="store_true",
+        help="Restore backup files for some targets",
+    )
+    parser.add_argument(
+        "-c",
+        "--cleanup",
+        action="store_true",
+        help="Cleanup the currently installed packages",
+    )
 
     args = parser.parse_args()
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    install(args.targets, do_backup=args.backup)
+    install(
+        args.targets,
+        do_backup=args.backup,
+        do_restore=args.restore,
+        do_cleanup=args.cleanup,
+    )
 
 
 if __name__ == "__main__":
