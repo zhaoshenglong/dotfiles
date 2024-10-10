@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 BLESH="$HOME/.local/share/blesh/ble.sh"
+BLERC="$HOME/.local/share/blesh/blerc"
 RUST_TOOLS=("starship" "cloc" "flamegraph" "tock")
 
 _install_ble() {
@@ -47,7 +48,7 @@ _safe_alias() {
 
 # Start of the main entrypoint
 # shellcheck disable=SC1090
-[[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach
+[[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach --rcfile "$BLERC"
 
 set -o vi
 

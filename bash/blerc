@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+bleopt highlight_syntax=on
+bleopt highlight_filename=on
+bleopt highlight_variable=on
+
+ble-face -s auto_complete fg=gray
+ble-face -s command_builtin fg=orange
+ble-face -s syntax_comment fg=gray
+
+ble-bind -m vi_imap -f 'C-c' discard-line
+ble-bind -m vi_nmap -f 'C-c' discard-line

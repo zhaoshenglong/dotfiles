@@ -92,9 +92,11 @@ class BashManager(TargetManager):
     def backup(self):
         file.backup(var.BashScriptPath)
         file.backup(var.StarshipPath)
+        file.backup(var.BlercPath)
 
     def cleanup(self):
         file.remove(var.BashScriptPath)
+        file.remove(var.BlercPath)
         file.remove(var.StarshipPath)
 
     def restore(self):
@@ -103,5 +105,6 @@ class BashManager(TargetManager):
     def install(self):
         logger.info(f"Copying files from {var.BashFiles} to {var.BashScriptPath}")
         file.copy(var.BashFiles, var.BashScriptPath)
+        file.copy(var.BlercFiles, var.BlercPath)
         file.copy(var.StarshipFiles, var.StarshipPath)
         logger.info("Installing Bash completed!")

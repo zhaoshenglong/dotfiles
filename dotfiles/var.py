@@ -22,5 +22,7 @@ TmuxFiles = Path(path.join(ROOT, "tmux"))
 # Bash
 BashScriptPath = Path(path.join(HOME, ".bashrc"))
 BashFiles = Path(path.join(ROOT, "bash", "bashrc"))
+BlercFiles = Path(path.join(ROOT, "bash", "blerc"))
 StarshipPath = Path(path.join(XDG_CONFIG_DIR, "starship.toml"))
+BlercPath = Path(path.join(XDG_DATA_DIR, "blesh", "blerc"))
 StarshipFiles = Path(path.join(ROOT, "bash", "starship.toml"))
