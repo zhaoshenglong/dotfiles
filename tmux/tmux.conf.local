@@ -13,7 +13,6 @@
 #   - disabled (do not modify new-session bindings)
 tmux_conf_new_session_prompt=true
 
-
 # -- windows & pane creation ---------------------------------------------------
 
 # new window retains current path, possible values are:
@@ -22,23 +21,11 @@ tmux_conf_new_session_prompt=true
 #   - disabled (do not modify new-window bindings)
 tmux_conf_new_window_retain_current_path=true
 
-# new window tries to reconnect ssh sessions, possible values are:
-#   - true
-#   - false (default)
-#   - disabled (do not modify new-window bindings)
-tmux_conf_new_window_reconnect_ssh=false
-
 # new pane retains current path, possible values are:
 #   - true (default)
 #   - false
 #   - disabled (do not modify split-window bindings)
 tmux_conf_new_pane_retain_current_path=true
-
-# new pane tries to reconnect ssh sessions, possible values are:
-#   - true
-#   - false (default)
-#   - disabled (do not modify split-window bindings)
-tmux_conf_new_pane_reconnect_ssh=false
 
 
 # -- display -------------------------------------------------------------------
@@ -228,7 +215,7 @@ tmux_conf_theme_right_separator_sub=''       # '\uE0B3' PowerlineSymbols.otf 
 #     - #{uptime_s}
 #     - #{username}
 #     - #{username_ssh}
-tmux_conf_theme_status_left=" ❐ #S | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
+tmux_conf_theme_status_left=" ❐ #S | 🟢#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
 tmux_conf_theme_status_right=" #{prefix}#{mouse}#{pairing}#{synchronized}, %R , %d %b | #{username}#{root} | #{hostname} "
 
 # status left style
@@ -239,7 +226,7 @@ tmux_conf_theme_status_left_attr="bold,none,none"
 # status right style
 tmux_conf_theme_status_right_fg="$tmux_conf_theme_colour_12,$tmux_conf_theme_colour_13,$tmux_conf_theme_colour_14"
 tmux_conf_theme_status_right_bg="$tmux_conf_theme_colour_15,$tmux_conf_theme_colour_16,$tmux_conf_theme_colour_17"
-tmux_conf_theme_status_right_attr="none,none,bold"
+tmux_conf_theme_status_right_attr="none,bold,bold"
 
 # pairing indicator
 tmux_conf_theme_pairing="👥"                 # U+2687
@@ -343,10 +330,4 @@ tmux_conf_uninstall_plugins_on_reload=true
 
 # to enable a plugin, use the 'set -g @plugin' syntax:
 # visit https://github.com/tmux-plugins for available plugins
-set -g @plugin 'tmux-plugins/tmux-copycat'
-set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @plugin 'tmux-plugins/tmux-cpu'
-set -g @plugin 'tmux-plugins/tmux-resurrect'
-set -g @plugin 'tmux-plugins/tmux-continuum'
-set -g @continuum-restore 'on'
 

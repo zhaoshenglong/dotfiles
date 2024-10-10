@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BLESH="$HOME/.local/share/blesh/ble.sh"
-RUST_TOOLS=("starship" "cloc" "flamegraph")
+RUST_TOOLS=("starship" "cloc" "flamegraph" "tock")
 
 _install_ble() {
   if ! [ -f "$BLESH" ]; then
