@@ -1,4 +1,4 @@
----@class loongvim.util.lazygit
+---@class util.lazygit
 ---@field config_dir? string
 ---@overload fun(cmd: string|string[], opts: LoongTermOpts): Loongloat
 local M = setmetatable({}, {

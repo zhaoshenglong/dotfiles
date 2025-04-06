@@ -1,15 +1,15 @@
----@class loongvim.util.toggle
+---@class util.toggle
 local M = {}
 
----@class loongvim.Toggle
+---@class Toggle
 ---@field name string
 ---@field get fun():boolean
 ---@field set fun(state:boolean)
 
----@class loongvim.Toggle.wrap: loongvim.Toggle
+---@class Toggle.wrap: Toggle
 ---@operator call:boolean
 
----@param toggle loongvim.Toggle
+---@param toggle Toggle
 function M.wrap(toggle)
   return setmetatable(toggle, {
     __call = function()
@@ -22,11 +22,11 @@ function M.wrap(toggle)
       end
       return state
     end,
-  }) --[[@as loongvim.Toggle.wrap]]
+  }) --[[@as Toggle.wrap]]
 end
 
 ---@param lhs string
----@param toggle loongvim.Toggle
+---@param toggle Toggle
 function M.map(lhs, toggle)
   local t = M.wrap(toggle)
   LoongVim.safe_keymap_set("n", lhs, function()

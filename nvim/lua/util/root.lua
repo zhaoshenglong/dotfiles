@@ -1,4 +1,4 @@
----@class loongvim.util.root
+---@class util.root
 ---@overload fun(): string
 local M = setmetatable({}, {
   __call = function(m)

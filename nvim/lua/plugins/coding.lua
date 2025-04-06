@@ -79,7 +79,7 @@ return {
         sorting = defaults.sorting,
       }
     end,
-    main = "loongvim.util.cmp",
+    main = "util.cmp",
   },
 
   -- snippets

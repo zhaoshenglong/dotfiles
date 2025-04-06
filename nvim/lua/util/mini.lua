@@ -1,4 +1,4 @@
----@class loongvim.util.mini
+---@class util.mini
 local M = {}
 
 ---@alias Mini.ai.loc {line:number, col:number}

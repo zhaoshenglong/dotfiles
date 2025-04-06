@@ -4,7 +4,7 @@ if lazyvim_docs then
   vim.g.loongvim_picker = "fzf"
 end
 
----@class FzfLuaOpts: loongvim.util.pick.Opts
+---@class FzfLuaOpts: util.pick.Opts
 ---@field cmd string?
 
 ---@type LoongPicker
@@ -281,7 +281,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = function()
-      local Keys = require("loongvim.plugins.lsp.keymaps").get()
+      local Keys = require("plugins.lsp.keymaps").get()
       -- stylua: ignore
       vim.list_extend(Keys, {
         { "gd", "<cmd>FzfLua lsp_definitions     jump_to_single_result=true ignore_current_line=true<cr>", desc = "Goto Definition", has = "definition" },

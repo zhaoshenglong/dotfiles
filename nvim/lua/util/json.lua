@@ -1,4 +1,4 @@
----@class loongvim.util.json
+---@class util.json
 local M = {}
 
 ---@param value any
@@ -53,7 +53,7 @@ function M.save()
 end
 
 function M.migrate()
-  LoongVim.info("Migrating `loongvim.json` to version `" .. LoongVim.config.json.version .. "`")
+  LoongVim.info("Migrating `json` to version `" .. LoongVim.config.json.version .. "`")
   local json = LoongVim.config.json
 
   -- v0
@@ -63,32 +63,32 @@ function M.migrate()
       json.data.hashes = nil
     end
     json.data.extras = vim.tbl_map(function(extra)
-      return "loongvim.plugins.extras." .. extra
+      return "plugins.extras." .. extra
     end, json.data.extras or {})
   elseif json.data.version == 1 then
     json.data.extras = vim.tbl_map(function(extra)
       -- replace double extras module name
-      return extra:gsub("^loongvim%.plugins%.extras%.loongvim%.plugins%.extras%.", "loongvim.plugins.extras.")
+      return extra:gsub("^loongvim%.plugins%.extras%.loongvim%.plugins%.extras%.", "plugins.extras.")
     end, json.data.extras or {})
   elseif json.data.version == 2 then
     json.data.extras = vim.tbl_map(function(extra)
-      return extra == "loongvim.plugins.extras.editor.symbols-outline" and "loongvim.plugins.extras.editor.outline"
+      return extra == "plugins.extras.editor.symbols-outline" and "plugins.extras.editor.outline"
         or extra
     end, json.data.extras or {})
   elseif json.data.version == 3 then
     json.data.extras = vim.tbl_filter(function(extra)
       return not (
-        extra == "loongvim.plugins.extras.coding.mini-ai"
-        or extra == "loongvim.plugins.extras.ui.treesitter-rewrite"
+        extra == "plugins.extras.coding.mini-ai"
+        or extra == "plugins.extras.ui.treesitter-rewrite"
       )
     end, json.data.extras or {})
   elseif json.data.version == 4 then
     json.data.extras = vim.tbl_filter(function(extra)
-      return not (extra == "loongvim.plugins.extras.lazyrc")
+      return not (extra == "plugins.extras.lazyrc")
     end, json.data.extras or {})
   elseif json.data.version == 5 then
     json.data.extras = vim.tbl_filter(function(extra)
-      return not (extra == "loongvim.plugins.extras.editor.trouble-v3")
+      return not (extra == "plugins.extras.editor.trouble-v3")
     end, json.data.extras or {})
   end
 

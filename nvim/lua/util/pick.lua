@@ -1,12 +1,12 @@
----@class loongvim.util.pick
----@overload fun(command:string, opts?:loongvim.util.pick.Opts): fun()
+---@class util.pick
+---@overload fun(command:string, opts?:util.pick.Opts): fun()
 local M = setmetatable({}, {
   __call = function(m, ...)
     return m.wrap(...)
   end,
 })
 
----@class loongvim.util.pick.Opts: table<string, any>
+---@class util.pick.Opts: table<string, any>
 ---@field root? boolean
 ---@field cwd? string
 ---@field buf? number
@@ -14,7 +14,7 @@ local M = setmetatable({}, {
 
 ---@class LoongPicker
 ---@field name string
----@field open fun(command:string, opts?:loongvim.util.pick.Opts)
+---@field open fun(command:string, opts?:util.pick.Opts)
 ---@field commands table<string, string>
 
 ---@type LoongPicker?
@@ -51,7 +51,7 @@ function M.want()
 end
 
 ---@param command? string
----@param opts? loongvim.util.pick.Opts
+---@param opts? util.pick.Opts
 function M.open(command, opts)
   if not M.picker then
     return LoongVim.error("LonngVim.pick: picker not set")
@@ -76,7 +76,7 @@ function M.open(command, opts)
 end
 
 ---@param command? string
----@param opts? loongvim.util.pick.Opts
+---@param opts? util.pick.Opts
 function M.wrap(command, opts)
   opts = opts or {}
   return function()

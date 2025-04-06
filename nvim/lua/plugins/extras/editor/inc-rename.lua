@@ -13,7 +13,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = function()
-      local keys = require("loongvim.plugins.lsp.keymaps").get()
+      local keys = require("plugins.lsp.keymaps").get()
       keys[#keys + 1] = {
         "<leader>cr",
         function()

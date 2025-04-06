@@ -1,4 +1,4 @@
----@class loongvim.util.cmp
+---@class util.cmp
 local M = {}
 
 ---@alias Placeholder {n:number, text:string}

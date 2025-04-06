@@ -1,4 +1,4 @@
----@class loongvim.util.lualine
+---@class util.lualine
 local M = {}
 
 function M.cmp_source(name, icon)

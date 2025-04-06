@@ -1,4 +1,4 @@
----@class loongvim.util.format
+---@class util.format
 ---@overload fun(opts?: {force?:boolean})
 local M = setmetatable({}, {
   __call = function(m, ...)
@@ -141,13 +141,13 @@ end
 function M.health()
   local Config = require("lazy.core.config")
   local has_plugin = Config.spec.plugins["none-ls.nvim"]
-  local has_extra = vim.tbl_contains(Config.spec.modules, "loongvim.plugins.extras.lsp.none-ls")
+  local has_extra = vim.tbl_contains(Config.spec.modules, "plugins.extras.lsp.none-ls")
   if has_plugin and not has_extra then
     LoongVim.warn({
       "`conform.nvim` and `nvim-lint` are now the default formatters and linters in LoongVim.",
       "",
       "You can use those plugins together with `none-ls.nvim`,",
-      "but you need to enable the `loongvim.plugins.extras.lsp.none-ls` extra,",
+      "but you need to enable the `plugins.extras.lsp.none-ls` extra,",
       "for formatting to work correctly.",
       "",
       "In case you no longer want to use `none-ls.nvim`, just remove the spec from your config.",

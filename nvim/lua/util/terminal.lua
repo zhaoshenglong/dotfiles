@@ -1,4 +1,4 @@
----@class loongvim.util.terminal
+---@class util.terminal
 ---@overload fun(cmd: string|string[], opts: LoongTermOpts): LazyFloat
 local M = setmetatable({}, {
   __call = function(m, ...)

@@ -67,7 +67,7 @@ opt.fillchars = {
 	eob = " ",
 }
 opt.foldlevel = 99
-opt.formatexpr = "v:lua.require'loongvim.util'.format.formatexpr()"
+opt.formatexpr = "v:lua.require'util'.format.formatexpr()"
 opt.formatoptions = "jcroqlnt" -- tcqj
 opt.grepformat = "%f:%l:%c:%m"
 opt.grepprg = "rg --vimgrep"
@@ -97,7 +97,7 @@ opt.spelloptions:append("noplainbuffer")
 opt.splitbelow = true -- Put new windows below current
 opt.splitkeep = "screen"
 opt.splitright = true -- Put new windows right of current
-opt.statuscolumn = [[%!v:lua.require'loongvim.util'.ui.statuscolumn()]]
+opt.statuscolumn = [[%!v:lua.require'util'.ui.statuscolumn()]]
 opt.tabstop = 2 -- Number of spaces tabs count for
 opt.termguicolors = true -- True color support
 opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower than default (1000) to quickly trigger which-key
@@ -111,12 +111,12 @@ opt.wrap = false -- Disable line wrap
 
 if vim.fn.has("nvim-0.10") == 1 then
 	opt.smoothscroll = true
-	opt.foldexpr = "v:lua.require'loongvim.util'.ui.foldexpr()"
+	opt.foldexpr = "v:lua.require'util'.ui.foldexpr()"
 	opt.foldmethod = "expr"
 	opt.foldtext = ""
 else
 	opt.foldmethod = "indent"
-	opt.foldtext = "v:lua.require'loongvim.util'.ui.foldtext()"
+	opt.foldtext = "v:lua.require'util'.ui.foldtext()"
 end
 
 -- Fix markdown indentation settings

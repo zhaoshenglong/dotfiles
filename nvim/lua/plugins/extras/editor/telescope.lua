@@ -14,10 +14,10 @@ local picker = {
     files = "find_files",
   },
   -- this will return a function that calls telescope.
-  -- cwd will default to loongvim.util.get_root
+  -- cwd will default to util.get_root
   -- for `files`, git_files or find_files will be chosen depending on .git
   ---@param builtin string
-  ---@param opts? loongvim.util.pick.Opts
+  ---@param opts? util.pick.Opts
   open = function(builtin, opts)
     opts = opts or {}
     opts.follow = opts.follow ~= false
@@ -281,7 +281,7 @@ return {
       if LoongVim.pick.want() ~= "telescope" then
         return
       end
-      local Keys = require("loongvim.plugins.lsp.keymaps").get()
+      local Keys = require("plugins.lsp.keymaps").get()
       -- stylua: ignore
       vim.list_extend(Keys, {
         { "gd", function() require("telescope.builtin").lsp_definitions({ reuse_win = true }) end, desc = "Goto Definition", has = "definition" },

@@ -15,16 +15,12 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local loongvimpath = vim.fn.stdpath("config") .. "/lua/loongvim"
+require("config").setup({
+	colorscheme = "catppuccin-mocha",
+})
+
 require("lazy").setup({
 	spec = {
-		{
-			dir = loongvimpath,
-			import = "loongvim/plugins",
-			opts = {
-				colorscheme = "catppuccin-mocha",
-			},
-		},
 		{ import = "plugins" },
 	},
 	install = {

@@ -1,7 +1,7 @@
 return {
 
   -- depends on the git extra for highlighting and auto-completion of github issues/prs
-  { import = "loongvim.plugins.extras.lang.git" },
+  { import = "plugins.extras.lang.git" },
 
   -- Octo
   {

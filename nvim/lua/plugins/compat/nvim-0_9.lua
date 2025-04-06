@@ -2,11 +2,11 @@
 return {
   -- Use LuaSnip instead of native snippets
   { "garymjr/nvim-snippets", enabled = false },
-  { import = "loongvim.plugins.extras.coding.luasnip" },
+  { import = "plugins.extras.coding.luasnip" },
 
   -- Use mini.comment instead of ts-comments
   { "folke/ts-comments.nvim", enabled = false },
-  { import = "loongvim.plugins.extras.coding.mini-comment" },
+  { import = "plugins.extras.coding.mini-comment" },
 
   -- Use neodev-types with lazydev
   { "folke/neodev.nvim", config = function() end },

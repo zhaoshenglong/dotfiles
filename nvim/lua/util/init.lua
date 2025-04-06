@@ -1,22 +1,22 @@
 _G.LazyUtil = require("lazy.core.util")
 
----@class loongvim.util: LazyUtilCore
+---@class util: LazyUtil
 ---@field config LoongVimConfig
----@field ui loongvim.util.ui
----@field lsp loongvim.util.lsp
----@field root loongvim.util.root
----@field terminal loongvim.util.terminal
----@field lazygit loongvim.util.lazygit
----@field toggle loongvim.util.toggle
----@field format loongvim.util.format
----@field plugin loongvim.util.plugin
----@field extras loongvim.util.extras
----@field inject loongvim.util.inject
----@field json loongvim.util.json
----@field lualine loongvim.util.lualine
----@field mini loongvim.util.mini
----@field pick loongvim.util.pick
----@field cmp loongvim.util.cmp
+---@field ui util.ui
+---@field lsp util.lsp
+---@field root util.root
+---@field terminal util.terminal
+---@field lazygit util.lazygit
+---@field toggle util.toggle
+---@field format util.format
+---@field plugin util.plugin
+---@field extras util.extras
+---@field inject util.inject
+---@field json util.json
+---@field lualine util.lualine
+---@field mini util.mini
+---@field pick util.pick
+---@field cmp util.cmp
 local M = {}
 
 setmetatable(M, {
@@ -26,7 +26,7 @@ setmetatable(M, {
       return LazyUtil[k]
     end
     ---@diagnostic disable-next-line: no-unknown
-    t[k] = require("loongvim.util." .. k)
+    t[k] = require("util." .. k)
     return t[k]
   end,
 })
@@ -51,8 +51,8 @@ end
 
 ---@param extra string
 function M.has_extra(extra)
-  local Config = require("loongvim.config")
-  local modname = "loongvim.plugins.extras." .. extra
+  local Config = require("config")
+  local modname = "plugins.extras." .. extra
   return vim.tbl_contains(require("lazy.core.config").spec.modules, modname)
     or vim.tbl_contains(Config.json.data.extras, modname)
 end
