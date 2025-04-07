@@ -7,87 +7,73 @@ LoongVim.config = M
 
 ---@class LoongVimOptions
 local defaults = {
-	-- colorscheme can be a string like `catppuccin` or a function that will load the colorscheme
-	---@type string|fun()
-	colorscheme = function()
-		require("catppuccin-mocha").load()
-	end,
-	-- load the default settings
-	defaults = {
-		autocmds = true, -- config.autocmds
-		keymaps = true, -- config.keymaps
-		-- config.options can't be configured here since that's loaded before loongvim setup
-		-- if you want to disable loading options, add `package.loaded["config.options"] = true` to the top of your init.lua
+	icons = {
+		misc = {
+			dots = "󰇘",
+		},
+		ft = {
+			octo = "",
+		},
+		dap = {
+			Stopped = { "󰁕 ", "DiagnosticWarn", "DapStoppedLine" },
+			Breakpoint = " ",
+			BreakpointCondition = " ",
+			BreakpointRejected = { " ", "DiagnosticError" },
+			LogPoint = ".>",
+		},
+		diagnostics = {
+			Error = " ",
+			Warn = " ",
+			Hint = " ",
+			Info = " ",
+		},
+		git = {
+			added = " ",
+			modified = " ",
+			removed = " ",
+		},
+		kinds = {
+			Array = " ",
+			Boolean = "󰨙 ",
+			Class = " ",
+			Codeium = "󰘦 ",
+			Color = " ",
+			Control = " ",
+			Collapsed = " ",
+			Constant = "󰏿 ",
+			Constructor = " ",
+			Copilot = " ",
+			Enum = " ",
+			EnumMember = " ",
+			Event = " ",
+			Field = " ",
+			File = " ",
+			Folder = " ",
+			Function = "󰊕 ",
+			Interface = " ",
+			Key = " ",
+			Keyword = " ",
+			Method = "󰊕 ",
+			Module = " ",
+			Namespace = "󰦮 ",
+			Null = " ",
+			Number = "󰎠 ",
+			Object = " ",
+			Operator = " ",
+			Package = " ",
+			Property = " ",
+			Reference = " ",
+			Snippet = " ",
+			String = " ",
+			Struct = "󰆼 ",
+			TabNine = "󰏚 ",
+			Text = " ",
+			TypeParameter = " ",
+			Unit = " ",
+			Value = " ",
+			Variable = "󰀫 ",
+		},
 	},
-  -- icons used by other plugins
-  -- stylua: ignore
-  icons = {
-    misc = {
-      dots = "󰇘",
-    },
-    ft = {
-      octo = "",
-    },
-    dap = {
-      Stopped             = { "󰁕 ", "DiagnosticWarn", "DapStoppedLine" },
-      Breakpoint          = " ",
-      BreakpointCondition = " ",
-      BreakpointRejected  = { " ", "DiagnosticError" },
-      LogPoint            = ".>",
-    },
-    diagnostics = {
-      Error = " ",
-      Warn  = " ",
-      Hint  = " ",
-      Info  = " ",
-    },
-    git = {
-      added    = " ",
-      modified = " ",
-      removed  = " ",
-    },
-    kinds = {
-      Array         = " ",
-      Boolean       = "󰨙 ",
-      Class         = " ",
-      Codeium       = "󰘦 ",
-      Color         = " ",
-      Control       = " ",
-      Collapsed     = " ",
-      Constant      = "󰏿 ",
-      Constructor   = " ",
-      Copilot       = " ",
-      Enum          = " ",
-      EnumMember    = " ",
-      Event         = " ",
-      Field         = " ",
-      File          = " ",
-      Folder        = " ",
-      Function      = "󰊕 ",
-      Interface     = " ",
-      Key           = " ",
-      Keyword       = " ",
-      Method        = "󰊕 ",
-      Module        = " ",
-      Namespace     = "󰦮 ",
-      Null          = " ",
-      Number        = "󰎠 ",
-      Object        = " ",
-      Operator      = " ",
-      Package       = " ",
-      Property      = " ",
-      Reference     = " ",
-      Snippet       = " ",
-      String        = " ",
-      Struct        = "󰆼 ",
-      TabNine       = "󰏚 ",
-      Text          = " ",
-      TypeParameter = " ",
-      Unit          = " ",
-      Value         = " ",
-      Variable      = "󰀫 ",
-    },
-  },
 	---@type table<string, string[]|boolean>?
 	kind_filter = {
 		default = {
@@ -107,7 +93,6 @@ local defaults = {
 		},
 		markdown = false,
 		help = false,
-		-- you can specify a different filter for each filetype
 		lua = {
 			"Class",
 			"Constructor",
@@ -174,39 +159,12 @@ function M.setup(opts)
 			LoongVim.format.setup()
 			LoongVim.root.setup()
 
-			vim.api.nvim_create_user_command("LoongExtras", function()
-				LoongVim.extras.show()
-			end, { desc = "Manage LoongVim extras" })
-
 			vim.api.nvim_create_user_command("LazyHealth", function()
 				vim.cmd([[Lazy! load all]])
 				vim.cmd([[checkhealth]])
 			end, { desc = "Load all plugins and run :checkhealth" })
-
-			local health = require("lazy.health")
-			vim.list_extend(health.valid, {
-				"recommended",
-				"desc",
-				"vscode",
-			})
 		end,
 	})
-
-	LazyUtil.track("colorscheme")
-	LazyUtil.try(function()
-		if type(M.colorscheme) == "function" then
-			M.colorscheme()
-		else
-			vim.cmd.colorscheme(M.colorscheme)
-		end
-	end, {
-		msg = "Could not load your colorscheme",
-		on_error = function(msg)
-			LoongVim.error(msg)
-			vim.cmd.colorscheme("habamax")
-		end,
-	})
-	LazyUtil.track()
 end
 
 ---@param buf? number
@@ -236,15 +194,7 @@ function M.load(name)
 			end, { msg = "Failed loading " .. mod })
 		end
 	end
-	local pattern = "LoongVim" .. name:sub(1, 1):upper() .. name:sub(2)
 	_load("config." .. name)
-	vim.api.nvim_exec_autocmds("User", { pattern = pattern .. "Defaults", modeline = false })
-	if vim.bo.filetype == "lazy" then
-		-- HACK: LoongVim may have overwritten options of the Lazy ui, so reset this here
-		-- I actually do not understand it (shzhao)
-		vim.cmd([[do VimResized]])
-	end
-	vim.api.nvim_exec_autocmds("User", { pattern = pattern, modeline = false })
 end
 
 M.did_init = false

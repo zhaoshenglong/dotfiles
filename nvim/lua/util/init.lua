@@ -1,6 +1,6 @@
 _G.LazyUtil = require("lazy.core.util")
 
----@class util: LazyUtil
+---@class util: LazyUtilCore
 ---@field config LoongVimConfig
 ---@field ui util.ui
 ---@field lsp util.lsp
@@ -250,25 +250,5 @@ function M.memoize(fn)
   end
 end
 
----@generic T: table
----@param tbl T
-function M.pretty_print(tbl, indent)
-  indent = indent or 2
-  if type(tbl) ~= "table" then
-    print(tbl)
-  end
-
-  local space = string.rep(" ", indent)
-  print("{")
-  for key, value in pairs(tbl) do
-    if type(value) ~= "table" then
-      print(space .. "[" .. tostring(key) .. "]=" .. tostring(value))
-    else
-      print(space .. "[" .. tostring(key) .. "]=")
-      M.pretty_print(tbl, indent)
-    end
-  end
-  print("}")
-end
 
 return M

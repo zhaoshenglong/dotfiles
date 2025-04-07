@@ -366,7 +366,7 @@ return {
           header = vim.split(logo, "\n"),
           -- stylua: ignore
           center = {
-            { action = 'lua LoongVim.pick()()',                           desc = " Find File",       icon = " ", key = "f" },
+            { action = 'lua require("fzf-lua").files()',                           desc = " Find File",       icon = " ", key = "f" },
             { action = "ene | startinsert",                              desc = " New File",         icon = " ", key = "n" },
             { action = 'lua LoongVim.pick("oldfiles")()',                 desc = " Recent Files",    icon = " ", key = "r" },
             { action = 'lua LoongVim.pick("live_grep")()',                desc = " Find Text",       icon = " ", key = "g" },

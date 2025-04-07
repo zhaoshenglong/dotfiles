@@ -19,14 +19,15 @@ function M.setup()
   M.lazy_file()
 end
 
-function M.extra_idx(name)
-  local Config = require("lazy.core.config")
-  for i, extra in ipairs(Config.spec.modules) do
-    if extra == "plugins.extras." .. name then
-      return i
-    end
-  end
-end
+-- TODO: remove this
+-- function M.extra_idx(name)
+--   local Config = require("lazy.core.config")
+--   for i, extra in ipairs(Config.spec.modules) do
+--     if extra == "plugins.extras." .. name then
+--       return i
+--     end
+--   end
+-- end
 
 function M.lazy_file()
   -- This autocmd will only trigger when a file was loaded from the cmdline.

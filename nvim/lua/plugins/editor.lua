@@ -370,14 +370,9 @@ return {
 
   {
     import = "plugins.extras.editor.fzf",
-    enabled = function()
-      return LoongVim.pick.want() == "fzf"
-    end,
   },
-  {
-    import = "plugins.extras.editor.telescope",
-    enabled = function()
-      return LoongVim.pick.want() == "telescope"
-    end,
-  },
+  -- NOTE: switch to `telescope.nvim` if it is desired
+  -- {
+  --   import = "plugins.extras.editor.telescope",
+  -- },
 }

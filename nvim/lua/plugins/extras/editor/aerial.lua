@@ -78,14 +78,15 @@ return {
     "folke/edgy.nvim",
     optional = true,
     opts = function(_, opts)
-      local edgy_idx = LoongVim.plugin.extra_idx("ui.edgy")
-      local aerial_idx = LoongVim.plugin.extra_idx("editor.aerial")
+      -- TODO: remove this
+      -- local edgy_idx = LoongVim.plugin.extra_idx("ui.edgy")
+      -- local aerial_idx = LoongVim.plugin.extra_idx("editor.aerial")
 
-      if edgy_idx and edgy_idx > aerial_idx then
-        LoongVim.warn("The `edgy.nvim` extra must be **imported** before the `aerial.nvim` extra to work properly.", {
-          title = "LoongVim",
-        })
-      end
+      -- if edgy_idx and edgy_idx > aerial_idx then
+      --   LoongVim.warn("The `edgy.nvim` extra must be **imported** before the `aerial.nvim` extra to work properly.", {
+      --     title = "LoongVim",
+      --   })
+      -- end
 
       opts.right = opts.right or {}
       table.insert(opts.right, {

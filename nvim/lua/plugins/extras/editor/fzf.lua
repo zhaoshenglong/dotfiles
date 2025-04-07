@@ -24,9 +24,6 @@ local picker = {
     return require("fzf-lua")[command](opts)
   end,
 }
-if not LoongVim.pick.register(picker) then
-  return {}
-end
 
 local function symbols_filter(entry, ctx)
   if ctx.symbols_filter == nil then

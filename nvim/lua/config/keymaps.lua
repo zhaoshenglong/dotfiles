@@ -1,5 +1,3 @@
--- DO NOT USE `LoongVim.safe_keymap_set` IN YOUR OWN CONFIG!!
--- use `vim.keymap.set` instead
 local map = LoongVim.safe_keymap_set
 
 -- better up/down

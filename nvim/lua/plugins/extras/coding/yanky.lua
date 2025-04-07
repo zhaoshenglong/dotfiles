@@ -11,11 +11,7 @@ return {
     {
       "<leader>p",
       function()
-        if LoongVim.pick.picker.name == "telescope" then
-          require("telescope").extensions.yank_history.yank_history({})
-        else
-          vim.cmd([[YankyRingHistory]])
-        end
+        vim.cmd([[YankyRingHistory]])
       end,
       mode = { "n", "x" },
       desc = "Open Yank History",

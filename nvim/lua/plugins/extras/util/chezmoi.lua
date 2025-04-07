@@ -1,27 +1,3 @@
-local pick_chezmoi = function()
-  if LoongVim.pick.picker.name == "telescope" then
-    require("telescope").extensions.chezmoi.find_files()
-  elseif LoongVim.pick.picker.name == "fzf" then
-    local fzf_lua = require("fzf-lua")
-    local results = require("chezmoi.commands").list()
-    local chezmoi = require("chezmoi.commands")
-
-    local opts = {
-      fzf_opts = {},
-      fzf_colors = true,
-      actions = {
-        ["default"] = function(selected)
-          chezmoi.edit({
-            targets = { "~/" .. selected[1] },
-            args = { "--watch" },
-          })
-        end,
-      },
-    }
-    fzf_lua.fzf_exec(results, opts)
-  end
-end
-
 return {
   {
     -- highlighting for chezmoi files template files
@@ -36,7 +12,25 @@ return {
     keys = {
       {
         "<leader>sz",
-        pick_chezmoi,
+        function()
+          local fzf_lua = require("fzf-lua")
+          local results = require("chezmoi.commands").list()
+          local chezmoi = require("chezmoi.commands")
+
+          local opts = {
+            fzf_opts = {},
+            fzf_colors = true,
+            actions = {
+              ["default"] = function(selected)
+                chezmoi.edit({
+                  targets = { "~/" .. selected[1] },
+                  args = { "--watch" },
+                })
+              end,
+            },
+          }
+          fzf_lua.fzf_exec(results, opts)
+        end,
         desc = "Chezmoi",
       },
     },

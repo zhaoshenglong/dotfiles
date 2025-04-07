@@ -8,6 +8,11 @@ if vim.fn.has("nvim-0.9.0") == 0 then
 	return {}
 end
 
+vim.api.nvim_echo({
+	{ "FUCKKKKKKKKK!!!!" },
+	vim.fn.getchar(),
+}, true, {})
+
 require("config").init()
 
 return {
