@@ -1,7 +1,4 @@
 return {
-  recommended = {
-    ft = { "gitcommit", "gitconfig", "gitrebase", "gitignore", "gitattributes" },
-  },
   -- Treesitter git support
   {
     "nvim-treesitter/nvim-treesitter",

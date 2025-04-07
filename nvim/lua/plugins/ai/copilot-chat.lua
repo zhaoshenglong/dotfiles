@@ -9,8 +9,7 @@ function M.pick(kind)
       LoongVim.warn("No " .. kind .. " found on the current line")
       return
     end
-    local ok = pcall(require, "fzf-lua")
-    require("CopilotChat.integrations." .. (ok and "fzflua" or "telescope")).pick(items)
+    require("CopilotChat.integrations.fzflua").pick(items)
   end
 end
 

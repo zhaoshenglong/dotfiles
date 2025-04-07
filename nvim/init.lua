@@ -20,29 +20,29 @@ require("config").setup({
 })
 
 -- 2. Import plugins
--- require("lazy").setup({
--- 	spec = {
--- 		{ import = "plugins" },
--- 	},
--- 	install = {
--- 		colorscheme = { "catppuccin-mocha", "habamax" },
--- 	},
--- 	checker = {
--- 		enabled = true, -- check for plugin updates regularly
--- 		notify = true, -- notify on updates
--- 	},
--- 	performance = {
--- 		rtp = {
--- 			disabled_plugins = {
--- 				"gzip",
--- 				"tarPlugin",
--- 				"tohtml",
--- 				"tutor",
--- 				"zipPlugin",
--- 			},
--- 		},
--- 	},
--- })
+require("lazy").setup({
+	spec = {
+		{ import = "plugins" },
+	},
+	install = {
+		colorscheme = { "catppuccin-mocha", "habamax" },
+	},
+	checker = {
+		enabled = true, -- check for plugin updates regularly
+		notify = true, -- notify on updates
+	},
+	performance = {
+		rtp = {
+			disabled_plugins = {
+				"gzip",
+				"tarPlugin",
+				"tohtml",
+				"tutor",
+				"zipPlugin",
+			},
+		},
+	},
+})
 
 -- 3. Explicityly load the colorscheme
 LazyUtil.try(function()

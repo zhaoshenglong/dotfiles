@@ -1,10 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = "dockerfile",
-      root = { "Dockerfile", "docker-compose.yml", "compose.yml", "docker-compose.yaml", "compose.yaml" },
-    })
-  end,
   {
     "nvim-treesitter/nvim-treesitter",
     opts = { ensure_installed = { "dockerfile" } },

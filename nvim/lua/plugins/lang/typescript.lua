@@ -1,18 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = {
-        "javascript",
-        "javascriptreact",
-        "javascript.jsx",
-        "typescript",
-        "typescriptreact",
-        "typescript.tsx",
-      },
-      root = { "tsconfig.json", "package.json", "jsconfig.json" },
-    })
-  end,
-
   -- correctly setup lspconfig
   {
     "neovim/nvim-lspconfig",

@@ -1,19 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-      root = {
-        ".clangd",
-        ".clang-tidy",
-        ".clang-format",
-        "compile_commands.json",
-        "compile_flags.txt",
-        "configure.ac", -- AutoTools
-      },
-    })
-  end,
-
-  -- Add C/C++ to treesitter
   {
     "nvim-treesitter/nvim-treesitter",
     opts = { ensure_installed = { "cpp" } },

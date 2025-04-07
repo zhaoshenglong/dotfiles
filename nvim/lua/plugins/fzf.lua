@@ -1,29 +1,5 @@
-if lazyvim_docs then
-  -- In case you don't want to use `:LoongExtras`,
-  -- then you need to set the option below.
-  vim.g.loongvim_picker = "fzf"
-end
-
 ---@class FzfLuaOpts: util.pick.Opts
 ---@field cmd string?
-
----@type LoongPicker
-local picker = {
-  name = "fzf",
-  commands = {
-    files = "files",
-  },
-
-  ---@param command string
-  ---@param opts? FzfLuaOpts
-  open = function(command, opts)
-    opts = opts or {}
-    if opts.cmd == nil and command == "git_files" and opts.show_untracked then
-      opts.cmd = "git ls-files --exclude-standard --cached --others"
-    end
-    return require("fzf-lua")[command](opts)
-  end,
-}
 
 local function symbols_filter(entry, ctx)
   if ctx.symbols_filter == nil then

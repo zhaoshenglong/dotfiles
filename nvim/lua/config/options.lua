@@ -8,12 +8,6 @@ vim.g.maplocalleader = "\\"
 -- LoongVim auto format
 vim.g.autoformat = true
 
--- LoongVim picker to use.
--- Can be one of: telescope, fzf
--- Leave it to "auto" to automatically use the picker
--- enabled with `:LoongExtras`
-vim.g.loongvim_picker = "auto"
-
 -- LoongVim root dir detection
 -- Each entry can be:
 -- * the name of a detector function like `lsp` or `cwd`

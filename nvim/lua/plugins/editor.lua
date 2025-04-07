@@ -369,7 +369,7 @@ return {
   },
 
   {
-    import = "plugins.extras.editor.fzf",
+    import = "plugins.fzf",
   },
   -- NOTE: switch to `telescope.nvim` if it is desired
   -- {

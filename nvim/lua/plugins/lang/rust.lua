@@ -1,11 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = "rust",
-      root = { "Cargo.toml", "rust-project.json" },
-    })
-  end,
-
   -- Extend auto completion
   {
     "hrsh7th/nvim-cmp",

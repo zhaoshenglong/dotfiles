@@ -111,30 +111,6 @@ local defaults = {
 	},
 }
 
-M.json = {
-	version = 6,
-	path = vim.g.loongvim_json or vim.fn.stdpath("config") .. "/json",
-	data = {
-		version = nil, ---@type string?
-		extras = {}, ---@type string[]
-	},
-}
-
-function M.json.load()
-	local f = io.open(M.json.path, "r")
-	if f then
-		local data = f:read("*a")
-		f:close()
-		local ok, json = pcall(vim.json.decode, data, { luanil = { object = true, array = true } })
-		if ok then
-			M.json.data = vim.tbl_deep_extend("force", M.json.data, json or {})
-			if M.json.data.version ~= M.json.version then
-				LoongVim.json.migrate()
-			end
-		end
-	end
-end
-
 ---@type LoongVimOptions
 local options
 local loong_clipboard
@@ -220,7 +196,6 @@ function M.init()
 	vim.opt.clipboard = ""
 
 	LoongVim.plugin.setup()
-	M.json.load()
 end
 
 setmetatable(M, {

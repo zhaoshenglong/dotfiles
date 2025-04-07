@@ -1,10 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = "yaml",
-    })
-  end,
-
   -- yaml schema support
   {
     "b0o/SchemaStore.nvim",

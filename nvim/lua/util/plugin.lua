@@ -1,5 +1,3 @@
-local Plugin = require("lazy.core.plugin")
-
 ---@class util.plugin
 local M = {}
 
@@ -16,20 +14,6 @@ function M.save_core()
 end
 
 function M.setup()
-  M.lazy_file()
-end
-
--- TODO: remove this
--- function M.extra_idx(name)
---   local Config = require("lazy.core.config")
---   for i, extra in ipairs(Config.spec.modules) do
---     if extra == "plugins.extras." .. name then
---       return i
---     end
---   end
--- end
-
-function M.lazy_file()
   -- This autocmd will only trigger when a file was loaded from the cmdline.
   -- It will render the file as quickly as possible.
   vim.api.nvim_create_autocmd("BufReadPost", {
@@ -57,9 +41,10 @@ function M.lazy_file()
 
   -- Add support for the LazyFile event
   local Event = require("lazy.core.handler.event")
-
+--   vim.echo({ "LazyFile event loaded" }, { title = "LoongVim" })
   Event.mappings.LazyFile = { id = "LazyFile", event = M.lazy_file_events }
   Event.mappings["User LazyFile"] = Event.mappings.LazyFile
 end
+
 
 return M

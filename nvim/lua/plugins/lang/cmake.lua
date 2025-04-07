@@ -1,10 +1,4 @@
 return {
-  recommended = function()
-    return LoongVim.extras.wants({
-      ft = "cmake",
-      root = { "CMakePresets.json", "CTestConfig.cmake", "cmake" },
-    })
-  end,
   {
     "nvim-treesitter/nvim-treesitter",
     opts = { ensure_installed = { "cmake" } },

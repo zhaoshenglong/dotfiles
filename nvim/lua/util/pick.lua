@@ -1,9 +1,9 @@
 ---@class util.pick
 ---@overload fun(command:string, opts?:util.pick.Opts): fun()
 local M = setmetatable({}, {
-  __call = function(m, ...)
-    return m.wrap(...)
-  end,
+    __call = function(m, ...)
+        return m.wrap(...)
+    end,
 })
 
 ---@class util.pick.Opts: table<string, any>
@@ -17,75 +17,87 @@ local M = setmetatable({}, {
 ---@field open fun(command:string, opts?:util.pick.Opts)
 ---@field commands table<string, string>
 
----@type LoongPicker?
-M.picker = nil
+-- TODO: remove this complex picker logic
+---@type LoongPicker
+M.picker = {
+    name = "fzf",
+    commands = {
+        files = "files",
+    },
 
----@param picker LoongPicker
-function M.register(picker)
-  -- this only happens when using :LoongExtras
-  -- so allow to get the full spec
-  if vim.v.vim_did_enter == 1 then
+    ---@param command string
+    ---@param opts? FzfLuaOpts
+    open = function(command, opts)
+        opts = opts or {}
+        if opts.cmd == nil and command == "git_files" and opts.show_untracked then
+            opts.cmd = "git ls-files --exclude-standard --cached --others"
+        end
+        return require("fzf-lua")[command](opts)
+    end,
+}
+
+
+---@param command? string
+---@param opts? util.pick.Opts
+function M.open(command, opts)
+    if not M.picker then
+        return LoongVim.error("LonngVim.pick: picker not set")
+    end
+
+    if M.picker and M.picker.name ~= M.want() then
+        M.picker = nil
+    end
+
+    if M.picker and M.picker.name ~= picker.name then
+        LoongVim.warn(
+            "`LoongVim.pick`: picker already set to `" ..
+            M.picker.name .. "`,\nignoring new picker `" .. picker.name .. "`"
+        )
+        return false
+    end
+    M.picker = picker
     return true
-  end
-
-  if M.picker and M.picker.name ~= M.want() then
-    M.picker = nil
-  end
-
-  if M.picker and M.picker.name ~= picker.name then
-    LoongVim.warn(
-      "`LoongVim.pick`: picker already set to `" .. M.picker.name .. "`,\nignoring new picker `" .. picker.name .. "`"
-    )
-    return false
-  end
-  M.picker = picker
-  return true
 end
 
 function M.want()
-  vim.g.loongvim_picker = vim.g.loongvim_picker or "auto"
-  if vim.g.loongvim_picker == "auto" then
-    return LoongVim.has_extra("editor.fzf") and "fzf" or "telescope"
-  end
-  return vim.g.loongvim_picker
+    vim.g.loongvim_picker = vim.g.loongvim_picker or "auto"
+    if vim.g.loongvim_picker == "auto" then
+        return LoongVim.has_extra("editor.fzf") and "fzf" or "telescope"
+    end
+    return vim.g.loongvim_picker
 end
 
 ---@param command? string
 ---@param opts? util.pick.Opts
 function M.open(command, opts)
-  if not M.picker then
-    return LoongVim.error("LonngVim.pick: picker not set")
-  end
+    command = command ~= "auto" and command or "files"
+    opts    = opts or {}
+    opts    = vim.deepcopy(opts)
 
-  command = command ~= "auto" and command or "files"
-  opts = opts or {}
+    if type(opts.cwd) == "boolean" then
+        LoongVim.warn("LoongVim.pick: opts.cwd should be a string or nil")
+        opts.cwd = nil
+    end
 
-  opts = vim.deepcopy(opts)
+    if not opts.cwd and opts.root ~= false then
+        opts.cwd = LoongVim.root({ buf = opts.buf })
+    end
 
-  if type(opts.cwd) == "boolean" then
-    LoongVim.warn("LoongVim.pick: opts.cwd should be a string or nil")
-    opts.cwd = nil
-  end
-
-  if not opts.cwd and opts.root ~= false then
-    opts.cwd = LoongVim.root({ buf = opts.buf })
-  end
-
-  command = M.picker.commands[command] or command
-  M.picker.open(command, opts)
+    command = M.picker.commands[command] or command
+    M.picker.open(command, opts)
 end
 
 ---@param command? string
 ---@param opts? util.pick.Opts
 function M.wrap(command, opts)
-  opts = opts or {}
-  return function()
-    LoongVim.pick.open(command, vim.deepcopy(opts))
-  end
+    opts = opts or {}
+    return function()
+        LoongVim.pick.open(command, vim.deepcopy(opts))
+    end
 end
 
 function M.config_files()
-  return M.wrap("files", { cwd = vim.fn.stdpath("config") })
+    return M.wrap("files", { cwd = vim.fn.stdpath("config") })
 end
 
 return M
