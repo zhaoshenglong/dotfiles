@@ -71,6 +71,27 @@ return {
           vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
         end,
       })
+
+      -- Parsers install asynchronously, so on a fresh setup a buffer can be
+      -- opened before its parser is ready and the callbacks above return
+      -- without configuring it. TSUpdate fires once installation finishes;
+      -- re-trigger FileType for buffers still missing highlighting (this also
+      -- retries the textobjects keymaps, which share the same condition).
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TSUpdate",
+        group = vim.api.nvim_create_augroup("loongvim_treesitter_retry", { clear = true }),
+        callback = function()
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if
+              vim.api.nvim_buf_is_loaded(buf)
+              and vim.bo[buf].filetype ~= ""
+              and not vim.treesitter.highlighter.active[buf]
+            then
+              vim.api.nvim_exec_autocmds("FileType", { buffer = buf, modeline = false })
+            end
+          end
+        end,
+      })
     end,
   },
 
