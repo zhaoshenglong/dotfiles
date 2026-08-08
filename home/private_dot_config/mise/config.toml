@@ -1,6 +1,6 @@
 # CLI tools managed by mise. Edit this file, then `chezmoi update` —
 # the run_onchange_install-tools script re-runs automatically when this
-# file changes. See docs/superpowers/specs/2026-08-08-mise-managed-tools-design.md
+# file changes.
 [tools]
 rust = "stable"           # provides cargo; required by the cargo: backend
 starship = "latest"

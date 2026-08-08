@@ -1,2 +1,5 @@
 __pycache__
 .venv
+
+# Local design specs / agent notes (superpowers)
+/docs/
