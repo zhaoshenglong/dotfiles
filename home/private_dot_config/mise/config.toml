@@ -5,5 +5,9 @@
 rust = "stable"           # provides cargo; required by the cargo: backend
 starship = "latest"
 fzf = "latest"
+tree-sitter = "latest"    # required by nvim-treesitter (main) to build parsers
+node = "lts"              # npm required by mason for many LSP servers
+lazygit = "latest"        # <leader>gg etc. in the nvim config
+delta = "latest"          # optional git previewer for fzf-lua
 "cargo:cloc" = "latest"
 "cargo:flamegraph" = "latest"

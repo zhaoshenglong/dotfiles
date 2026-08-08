@@ -1,43 +1,17 @@
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      spec = {
-        { "<BS>", desc = "Decrement Selection", mode = "x" },
-        { "<c-space>", desc = "Increment Selection", mode = { "x", "n" } },
-      },
-    },
-  },
-
   -- Treesitter is a new parser generator tool that we can
   -- use in Neovim to power faster and more accurate
   -- syntax highlighting.
   {
     "nvim-treesitter/nvim-treesitter",
-    version = false, -- last release is way too old and doesn't work on Windows
+    branch = "main", -- the rewritten plugin; master is frozen legacy
     build = ":TSUpdate",
-    event = { "LazyFile", "VeryLazy" },
-    lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
-    init = function(plugin)
-      -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-      -- no longer trigger the **nvim-treesitter** module to be loaded in time.
-      -- Luckily, the only things that those plugins need are the custom queries, which we make available
-      -- during startup.
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
-    end,
-    cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-    keys = {
-      { "<c-space>", desc = "Increment Selection" },
-      { "<bs>", desc = "Decrement Selection", mode = "x" },
-    },
+    lazy = false, -- the main branch does not support lazy-loading
     opts_extend = { "ensure_installed" },
-    ---@type TSConfig
-    ---@diagnostic disable-next-line: missing-fields
     opts = {
-      highlight = { enable = true },
-      indent = { enable = true },
+      -- parsers to install; highlighting/indentation/folding are enabled
+      -- per filetype in the autocommand below (there is no configs module
+      -- anymore, and incremental selection was dropped upstream)
       ensure_installed = {
         "bash",
         "c",
@@ -54,7 +28,6 @@ return {
         "javascript",
         "jsdoc",
         "json",
-        "jsonc",
         "lua",
         "luadoc",
         "luap",
@@ -66,7 +39,6 @@ return {
         "regex",
         "sql",
         "ssh_config",
-        "tmux",
         "toml",
         "tsx",
         "typescript",
@@ -76,64 +48,84 @@ return {
         "yaml",
         "rust",
       },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
-        },
-      },
-      textobjects = {
-        move = {
-          enable = true,
-          goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer", ["]a"] = "@parameter.inner" },
-          goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer", ["]A"] = "@parameter.inner" },
-          goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer", ["[a"] = "@parameter.inner" },
-          goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer", ["[A"] = "@parameter.inner" },
-        },
-      },
     },
-    ---@param opts TSConfig
     config = function(_, opts)
+      require("nvim-treesitter").setup()
       if type(opts.ensure_installed) == "table" then
-        opts.ensure_installed = LoongVim.dedup(opts.ensure_installed)
+        -- async no-op for parsers that are already installed
+        require("nvim-treesitter").install(LoongVim.dedup(opts.ensure_installed))
       end
-      require("nvim-treesitter.configs").setup(opts)
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("loongvim_treesitter", { clear = true }),
+        callback = function(ev)
+          -- highlighting is provided by Neovim itself; only proceed when a
+          -- parser for this filetype is actually installed
+          if not pcall(vim.treesitter.start, ev.buf) then
+            return
+          end
+          -- experimental treesitter indentation (same as the old indent module)
+          vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          -- treesitter-based folds, provided by Neovim
+          vim.wo[0][0].foldmethod = "expr"
+          vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        end,
+      })
     end,
   },
 
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main", -- main tracks the rewritten nvim-treesitter
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     event = "VeryLazy",
-    enabled = true,
-    config = function()
-      -- If treesitter is already loaded, we need to run config again for textobjects
-      if LoongVim.is_loaded("nvim-treesitter") then
-        local opts = LoongVim.opts("nvim-treesitter")
-        require("nvim-treesitter.configs").setup({ textobjects = opts.textobjects })
-      end
+    opts = {
+      select = { lookahead = true },
+      move = { set_jumps = true },
+    },
+    config = function(_, opts)
+      require("nvim-treesitter-textobjects").setup(opts)
 
-      -- When in diff mode, we want to use the default
-      -- vim text objects c & C instead of the treesitter ones.
-      local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-      local configs = require("nvim-treesitter.configs")
-      for name, fn in pairs(move) do
-        if name:find("goto") == 1 then
-          move[name] = function(q, ...)
-            if vim.wo.diff then
-              local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-              for key, query in pairs(config or {}) do
-                if q == query and key:find("[%]%[][cC]") then
-                  vim.cmd("normal! " .. key)
-                  return
-                end
-              end
-            end
-            return fn(q, ...)
-          end
+      -- the new plugin no longer creates keymaps; define the move maps
+      -- the old textobjects module provided (buffer-local, only where a
+      -- parser exists, keeping the diff-mode fallback for ]c/[c)
+      local maps = {
+        ["]f"] = { "goto_next_start", "@function.outer", "Next function start" },
+        ["]c"] = { "goto_next_start", "@class.outer", "Next class start" },
+        ["]a"] = { "goto_next_start", "@parameter.inner", "Next parameter start" },
+        ["]F"] = { "goto_next_end", "@function.outer", "Next function end" },
+        ["]C"] = { "goto_next_end", "@class.outer", "Next class end" },
+        ["]A"] = { "goto_next_end", "@parameter.inner", "Next parameter end" },
+        ["[f"] = { "goto_previous_start", "@function.outer", "Previous function start" },
+        ["[c"] = { "goto_previous_start", "@class.outer", "Previous class start" },
+        ["[a"] = { "goto_previous_start", "@parameter.inner", "Previous parameter start" },
+        ["[F"] = { "goto_previous_end", "@function.outer", "Previous function end" },
+        ["[C"] = { "goto_previous_end", "@class.outer", "Previous class end" },
+        ["[A"] = { "goto_previous_end", "@parameter.inner", "Previous parameter end" },
+      }
+      local function attach(buf)
+        if not pcall(vim.treesitter.get_parser, buf) then
+          return
         end
+        for lhs, map in pairs(maps) do
+          local method, query, desc = map[1], map[2], map[3]
+          vim.keymap.set({ "n", "x", "o" }, lhs, function()
+            -- in diff mode keep the default vim behavior for ]c/[c
+            if vim.wo.diff and lhs:find("[cC]") then
+              return vim.cmd("normal! " .. lhs)
+            end
+            require("nvim-treesitter-textobjects.move")[method](query, "textobjects")
+          end, { buffer = buf, desc = desc, silent = true })
+        end
+      end
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("loongvim_treesitter_textobjects", { clear = true }),
+        callback = function(ev)
+          attach(ev.buf)
+        end,
+      })
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        attach(buf)
       end
     end,
   },

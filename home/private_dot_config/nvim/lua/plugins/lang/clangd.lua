@@ -45,18 +45,22 @@ return {
           keys = {
             { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
           },
-          root_dir = function(fname)
-            return require("lspconfig.util").root_pattern(
-              "Makefile",
-              "configure.ac",
-              "configure.in",
-              "config.h.in",
-              "meson.build",
-              "meson_options.txt",
-              "build.ninja"
-            )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
-              fname
-            ) or require("lspconfig.util").find_git_ancestor(fname)
+          root_dir = function(bufnr, on_dir)
+            local fname = vim.api.nvim_buf_get_name(bufnr)
+            on_dir(
+              vim.fs.root(fname, {
+                "Makefile",
+                "configure.ac",
+                "configure.in",
+                "config.h.in",
+                "meson.build",
+                "meson_options.txt",
+                "build.ninja",
+              }) or vim.fs.root(fname, { "compile_commands.json", "compile_flags.txt" }) or vim.fs.root(
+                fname,
+                { ".git" }
+              )
+            )
           end,
           capabilities = {
             offsetEncoding = { "utf-16" },
@@ -78,9 +82,11 @@ return {
         },
       },
       setup = {
-        clangd = function(_, opts)
+        clangd = function(_, _)
+          -- server setup is handled by vim.lsp.config() in plugins/lsp;
+          -- clangd_extensions only adds its extra commands/features
           local clangd_ext_opts = LoongVim.opts("clangd_extensions.nvim")
-          require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts }))
+          require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = false }))
           return false
         end,
       },
@@ -99,7 +105,7 @@ return {
     optional = true,
     dependencies = {
       -- Ensure C/C++ debugger is installed
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
       optional = true,
       opts = { ensure_installed = { "codelldb" } },
     },
