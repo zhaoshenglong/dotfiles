@@ -7,9 +7,9 @@ BLESH="$HOME/.local/share/blesh/ble.sh"
 BLERC="$HOME/.local/share/blesh/blerc"
 
 # --- PATH -------------------------------------------------------------------
-# mise shims first so mise-managed tools win over any leftover
-# rustup/cargo installs under ~/.cargo/bin.
-for d in "$HOME/.local/share/mise/shims" "$HOME/.local/bin" "$HOME/.cargo/bin"; do
+# Each dir is prepended, so list them lowest priority first: mise shims
+# end up ahead of any leftover rustup/cargo installs under ~/.cargo/bin.
+for d in "$HOME/.cargo/bin" "$HOME/.local/bin" "$HOME/.local/share/mise/shims"; do
   if [ -d "$d" ]; then
     case ":$PATH:" in
       *":$d:"*) ;; # already on PATH
