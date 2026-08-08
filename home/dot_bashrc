@@ -9,7 +9,13 @@ BLERC="$HOME/.local/share/blesh/blerc"
 # --- PATH -------------------------------------------------------------------
 # Each dir is prepended, so list them lowest priority first: mise shims
 # end up ahead of any leftover rustup/cargo installs under ~/.cargo/bin.
-for d in "$HOME/.cargo/bin" "$HOME/.local/bin" "$HOME/.local/share/mise/shims"; do
+path_dirs=(
+  "$HOME/.cargo/bin"
+  "$HOME/.local/bin"
+  "$HOME/.local/share/mise/shims"
+  "$HOME/.kimi-code/bin"
+)
+for d in "${path_dirs[@]}"; do
   if [ -d "$d" ]; then
     case ":$PATH:" in
       *":$d:"*) ;; # already on PATH
