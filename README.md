@@ -40,6 +40,25 @@ chezmoi init --apply zhaoshenglong/dotfiles
 The trust anchor is the public key pinned above, so an attacker
 substituting release assets cannot produce a valid signature.
 
+## Using a local clone as the source
+
+If you already have this repo cloned, you can point chezmoi at it
+directly instead of letting `chezmoi init` clone it again:
+
+```sh
+chezmoi init --apply --source /path/to/this/repo
+```
+
+Note that `--source` only applies to that one command — chezmoi does
+not persist it, so later commands like `chezmoi status` or
+`chezmoi update` fall back to the default `~/.local/share/chezmoi` and
+fail with `stat ... no such file or directory`. To make it permanent,
+set `sourceDir` in `~/.config/chezmoi/chezmoi.toml`:
+
+```toml
+sourceDir = "/path/to/this/repo"
+```
+
 ## Daily usage
 
 ```sh
