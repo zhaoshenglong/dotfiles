@@ -1,0 +1,9 @@
+# CLI tools managed by mise. Edit this file, then `chezmoi update` —
+# the run_onchange_install-tools script re-runs automatically when this
+# file changes.
+[tools]
+rust = "stable"           # provides cargo; required by the cargo: backend
+starship = "latest"
+fzf = "latest"
+"cargo:cloc" = "latest"
+"cargo:flamegraph" = "latest"

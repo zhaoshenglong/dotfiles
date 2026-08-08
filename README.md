@@ -59,6 +59,23 @@ set `sourceDir` in `~/.config/chezmoi/chezmoi.toml`:
 sourceDir = "/path/to/this/repo"
 ```
 
+## Tool management
+
+CLI tools are installed by [mise](https://mise.jdx.dev), not by the
+shell startup files. `chezmoi apply` runs
+`home/run_onchange_after_install-tools.sh.tmpl`, which:
+
+1. installs mise itself to `~/.local/bin` (if missing),
+2. runs `mise install` against the manifest in
+   `home/private_dot_config/mise/config.toml` (rust, starship, fzf,
+   cloc, flamegraph),
+3. installs ble.sh (if missing — not available via mise).
+
+The script re-runs automatically whenever the manifest changes (its
+hash is embedded in the script via templating), so the upgrade path is:
+edit the manifest, commit, `chezmoi update`. `.bashrc` only activates
+tools that are present and never installs anything.
+
 ## Daily usage
 
 ```sh
