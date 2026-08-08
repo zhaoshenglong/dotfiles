@@ -1,0 +1,48 @@
+name: validate
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  shell-and-chezmoi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Install chezmoi (pinned, checksum-verified)
+        run: |
+          VERSION=2.72.0
+          curl -fsSLO "https://github.com/twpayne/chezmoi/releases/download/v${VERSION}/chezmoi-linux-amd64"
+          curl -fsSLO "https://github.com/twpayne/chezmoi/releases/download/v${VERSION}/chezmoi_${VERSION}_checksums.txt"
+          grep 'chezmoi-linux-amd64$' "chezmoi_${VERSION}_checksums.txt" | sha256sum -c -
+          sudo install -m 755 chezmoi-linux-amd64 /usr/local/bin/chezmoi
+
+      - name: Syntax-check shell files
+        run: |
+          bash -n home/dot_bashrc
+          bash -n home/run_onchange_after_install-tools.sh.tmpl
+          bash -n home/private_dot_config/tmux/tmux.conf.sh
+
+      - name: shellcheck
+        run: >-
+          shellcheck
+          home/dot_bashrc
+          home/run_onchange_after_install-tools.sh.tmpl
+          home/private_dot_config/tmux/tmux.conf.sh
+
+      - name: Validate chezmoi templates and dry-run apply
+        run: |
+          chezmoi execute-template --source "$PWD" \
+            < home/run_onchange_after_install-tools.sh.tmpl > /dev/null
+          chezmoi init --source "$PWD" --destination /tmp/dotfiles-test
+          chezmoi apply --dry-run --verbose \
+            --source "$PWD" --destination /tmp/dotfiles-test
