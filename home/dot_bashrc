@@ -56,7 +56,12 @@ fi
 
 set -o vi
 
+# default ls flags; an environment-provided LS_OPTIONS still wins
+: "${LS_OPTIONS:=--color=auto}"
 _safe_alias ls="ls $LS_OPTIONS"
+
+# use neovim (mise-managed) as vim
+_safe_alias vim="nvim"
 
 # starship — only if on PATH (mise shims or otherwise).
 if command -v starship >/dev/null 2>&1; then

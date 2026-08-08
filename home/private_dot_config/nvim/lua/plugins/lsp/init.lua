@@ -5,7 +5,9 @@ return {
     event = "LazyFile",
     dependencies = {
       "mason.nvim",
-      { "williamboman/mason-lspconfig.nvim", config = function() end },
+      -- set up manually in config() below, after mason.nvim and once the
+      -- server configs have been collected
+      { "mason-org/mason-lspconfig.nvim", config = function() end },
     },
     opts = function()
       ---@class PluginLspOpts
@@ -192,76 +194,75 @@ return {
         opts.capabilities or {}
       )
 
+      -- configure a server via vim.lsp.config(); returns true when a
+      -- custom setup handler took over (the server is managed elsewhere)
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, servers[server] or {})
-        if server_opts.enabled == false then
-          return
-        end
 
         if opts.setup[server] then
           if opts.setup[server](server, server_opts) then
-            return
+            return true
           end
         elseif opts.setup["*"] then
           if opts.setup["*"](server, server_opts) then
-            return
+            return true
           end
         end
-        require("lspconfig")[server].setup(server_opts)
+        vim.lsp.config(server, server_opts)
+        return false
       end
 
       -- get all the servers that are available through mason-lspconfig
       local have_mason, mlsp = pcall(require, "mason-lspconfig")
       local all_mslp_servers = {}
       if have_mason then
-        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig").get_mappings().lspconfig_to_package)
       end
 
       local ensure_installed = {} ---@type string[]
+      local automatic_exclude = {} ---@type string[]
       for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
-          if server_opts.enabled ~= false then
+          if server_opts.enabled == false then
+            automatic_exclude[#automatic_exclude + 1] = server
+          elseif server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
             -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
-              setup(server)
-            else
-              ensure_installed[#ensure_installed + 1] = server
+            if not setup(server) then
+              vim.lsp.enable(server)
             end
+          elseif setup(server) then
+            -- handled by another plugin (e.g. clangd_extensions); keep
+            -- mason-lspconfig from auto-enabling it as well
+            automatic_exclude[#automatic_exclude + 1] = server
+          else
+            -- mason-lspconfig installs and auto-enables it
+            ensure_installed[#ensure_installed + 1] = server
           end
         end
       end
 
       if have_mason then
         mlsp.setup({
-          ensure_installed = vim.tbl_deep_extend(
-            "force",
+          ensure_installed = vim.list_extend(
             ensure_installed,
             LoongVim.opts("mason-lspconfig.nvim").ensure_installed or {}
           ),
-          handlers = { setup },
+          automatic_enable = { exclude = automatic_exclude },
         })
       end
 
-      if LoongVim.lsp.is_enabled("denols") and LoongVim.lsp.is_enabled("vtsls") then
-        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        LoongVim.lsp.disable("vtsls", is_deno)
-        LoongVim.lsp.disable("denols", function(root_dir, config)
-          if not is_deno(root_dir) then
-            config.settings.deno.enable = false
-          end
-          return false
-        end)
-      end
+      -- NOTE: vtsls/denols mutual exclusion is handled by nvim-lspconfig's
+      -- own configs (vtsls refuses to attach in deno project roots).
     end,
   },
 
   -- cmdline tools and lsp servers
   {
 
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
