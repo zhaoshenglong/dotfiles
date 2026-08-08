@@ -1,29 +1,29 @@
 # Dotfiles
 
-A collection of my dotfiles.
-They present here due to version control.
+A collection of my dotfiles, managed with [chezmoi](https://www.chezmoi.io/).
+The source state lives in `home/` (see `.chezmoiroot`).
 
 ## Installation
-The install script relies on Python-3.11's features. (I will make it compatible with Python-3.9 on next release, but not for now)
 
-**Install Python-3.11**
+One command bootstraps chezmoi and applies the dotfiles:
+
 ```sh
-conda create python311 python=3.11.2
-conda activate python311
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply zhaoshenglong/dotfiles
 ```
 
-**Install dotfiles**
+## Daily usage
+
 ```sh
-python3 install.py -t nvim -v
-```
-To see more options
-```sh
-python3 install.py -h
+chezmoi update          # pull the repo and re-apply
+chezmoi edit ~/.bashrc  # edit a managed file in the source state
+chezmoi diff            # preview what apply would change
+chezmoi apply           # apply the source state
 ```
 
 ## Testing
-No test scripts provided for now
 
+Apply the source state into a throwaway destination instead of `$HOME`:
 
-## Packaging
-Considering make it a python package, so that I can install packages via `dotfiles install/uninstall ...`
+```sh
+chezmoi init --apply --source /path/to/this/repo --destination /tmp/dotfiles-test
+```
