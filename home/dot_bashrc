@@ -4,6 +4,22 @@ BLESH="$HOME/.local/share/blesh/ble.sh"
 BLERC="$HOME/.local/share/blesh/blerc"
 RUST_TOOLS=("starship" "cloc" "flamegraph" "tock")
 
+# --- PATH -------------------------------------------------------------------
+# Nothing at startup touches the network or installs anything; tools are
+# used only if they are already present on the system.
+for d in "$HOME/.local/bin" "$HOME/.cargo/bin"; do
+  if [ -d "$d" ]; then
+    case ":$PATH:" in
+      *":$d:"*) ;;            # already on PATH
+      *) PATH="$d:$PATH" ;;
+    esac
+  fi
+done
+export PATH
+
+# --- Optional one-time setup ------------------------------------------------
+# Run `dotfiles-install` manually on a new machine to fetch ble.sh, rustup,
+# the Rust tools above, and fzf. These are never invoked at shell startup.
 _install_ble() {
   if ! [ -f "$BLESH" ]; then
     wget -O - https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly.tar.xz | tar xJf -
@@ -13,14 +29,20 @@ _install_ble() {
 }
 
 _install_rust() {
-  if ! cargo version >/dev/null 2>&1; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  if ! command -v cargo >/dev/null 2>&1; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    # shellcheck disable=SC1091
+    . "$HOME/.cargo/env"
   fi
 }
 
 _cargo_install() {
   local -r tool="$1"
-  if ! which "$tool" >/dev/null 2>&1; then
+  if ! command -v cargo >/dev/null 2>&1; then
+    echo "cargo not found; run dotfiles-install (or _install_rust) first" >&2
+    return 1
+  fi
+  if ! command -v "$tool" >/dev/null 2>&1; then
     cargo install "$tool" --locked
   fi
 }
@@ -30,6 +52,15 @@ _install_fzf() {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
   fi
+}
+
+dotfiles-install() {
+  _install_ble
+  _install_rust
+  for tool in "${RUST_TOOLS[@]}"; do
+    _cargo_install "$tool"
+  done
+  _install_fzf
 }
 
 _safe_alias() {
@@ -46,22 +77,32 @@ _safe_alias() {
   fi
 }
 
-# Start of the main entrypoint
+# --- Startup integrations ----------------------------------------------------
+# Each integration is guarded: if the tool is not installed, the shell starts
+# cleanly without it.
+
+# ble.sh — only if already installed; ble-import needs ble.sh fully loaded,
+# which can still fail in sessions without a TTY (hence the BLE_VERSION check).
 # shellcheck disable=SC1090
-[[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach --rcfile "$BLERC"
+if [[ $- == *i* ]] && [ -f "$BLESH" ]; then
+  source "$BLESH" --noattach --rcfile "$BLERC"
+  if [[ ${BLE_VERSION-} ]]; then
+    ble-import -d integration/fzf-completion
+    ble-import -d integration/fzf-key-bindings
+  fi
+fi
 
 set -o vi
 
-_install_ble
-_install_rust
-for tool in "${RUST_TOOLS[@]}"; do
-  _cargo_install "$tool"
-done
 _safe_alias ls="ls $LS_OPTIONS"
 
-ble-import -d integration/fzf-completion
-ble-import -d integration/fzf-key-bindings
+# fzf — only if installed (e.g. by dotfiles-install).
+# shellcheck disable=SC1090
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-eval "$(~/.cargo/bin/starship init bash)"
+# starship — only if on PATH, wherever it was installed to.
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init bash)"
+fi
 
 [[ ! ${BLE_VERSION-} ]] || ble-attach
