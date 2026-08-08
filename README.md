@@ -11,6 +11,22 @@ One command bootstraps chezmoi and applies the dotfiles:
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply zhaoshenglong/dotfiles
 ```
 
+### Verified install (recommended)
+
+The one-liner above executes a mutable remote script. For a pinned
+version with checksum verification instead (linux-amd64; pick a version
+from <https://github.com/twpayne/chezmoi/releases>):
+
+```sh
+VERSION=2.72.0
+curl -fsSLO "https://github.com/twpayne/chezmoi/releases/download/v${VERSION}/chezmoi-linux-amd64"
+curl -fsSLO "https://github.com/twpayne/chezmoi/releases/download/v${VERSION}/chezmoi_${VERSION}_checksums.txt"
+grep 'chezmoi-linux-amd64$' "chezmoi_${VERSION}_checksums.txt" | sha256sum -c -
+install -m 755 chezmoi-linux-amd64 ~/.local/bin/chezmoi
+rm chezmoi-linux-amd64 "chezmoi_${VERSION}_checksums.txt"
+chezmoi init --apply zhaoshenglong/dotfiles
+```
+
 ## Daily usage
 
 ```sh
