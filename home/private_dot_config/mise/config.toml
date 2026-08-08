@@ -3,6 +3,7 @@
 # file changes.
 [tools]
 rust = "stable"           # provides cargo; required by the cargo: backend
+neovim = "stable"         # the editor this config is for
 starship = "latest"
 fzf = "latest"
 tree-sitter = "latest"    # required by nvim-treesitter (main) to build parsers
