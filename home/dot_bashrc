@@ -1,36 +1,23 @@
 #!/usr/bin/env bash
+# Pure configuration — nothing here installs anything or touches the
+# network. Tools are installed by chezmoi's run_onchange_install-tools
+# script (mise + ble.sh); this file only activates what is present.
 
 BLESH="$HOME/.local/share/blesh/ble.sh"
 BLERC="$HOME/.local/share/blesh/blerc"
-RUST_TOOLS=("starship" "cloc" "flamegraph" "tock")
 
-_install_ble() {
-  if ! [ -f "$BLESH" ]; then
-    wget -O - https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly.tar.xz | tar xJf -
-    bash ble-nightly/ble.sh --install ~/.local/share
-    rm -rf ble-nightly
+# --- PATH -------------------------------------------------------------------
+# mise shims first so mise-managed tools win over any leftover
+# rustup/cargo installs under ~/.cargo/bin.
+for d in "$HOME/.local/share/mise/shims" "$HOME/.local/bin" "$HOME/.cargo/bin"; do
+  if [ -d "$d" ]; then
+    case ":$PATH:" in
+      *":$d:"*) ;; # already on PATH
+      *) PATH="$d:$PATH" ;;
+    esac
   fi
-}
-
-_install_rust() {
-  if ! cargo version >/dev/null 2>&1; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  fi
-}
-
-_cargo_install() {
-  local -r tool="$1"
-  if ! which "$tool" >/dev/null 2>&1; then
-    cargo install "$tool" --locked
-  fi
-}
-
-_install_fzf() {
-  if ! [ -f ~/.fzf.bash ]; then
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
-  fi
-}
+done
+export PATH
 
 _safe_alias() {
   if [ $# -ne 1 ]; then
@@ -46,22 +33,34 @@ _safe_alias() {
   fi
 }
 
-# Start of the main entrypoint
+# --- Integrations -------------------------------------------------------------
+# Each integration is guarded: if the tool is not installed, the shell
+# starts cleanly without it.
+
+# ble.sh — only if installed; ble-import needs ble.sh fully loaded, which
+# can still fail in sessions without a TTY (hence the BLE_VERSION check).
 # shellcheck disable=SC1090
-[[ $- == *i* ]] && [ -f "$BLESH" ] && source "$BLESH" --noattach --rcfile "$BLERC"
+if [[ $- == *i* ]] && [ -f "$BLESH" ]; then
+  source "$BLESH" --noattach --rcfile "$BLERC"
+  if [[ ${BLE_VERSION-} ]]; then
+    ble-import -d integration/fzf-completion
+    ble-import -d integration/fzf-key-bindings
+  fi
+fi
 
 set -o vi
 
-_install_ble
-_install_rust
-for tool in "${RUST_TOOLS[@]}"; do
-  _cargo_install "$tool"
-done
 _safe_alias ls="ls $LS_OPTIONS"
 
-ble-import -d integration/fzf-completion
-ble-import -d integration/fzf-key-bindings
+# starship — only if on PATH (mise shims or otherwise).
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init bash)"
+fi
 
-eval "$(~/.cargo/bin/starship init bash)"
+# fzf — only if on PATH and ble.sh is not loaded (ble.sh has its own fzf
+# integration via ble-import above; loading both would double-bind keys).
+if [[ ! ${BLE_VERSION-} ]] && command -v fzf >/dev/null 2>&1; then
+  eval "$(fzf --bash)"
+fi
 
 [[ ! ${BLE_VERSION-} ]] || ble-attach

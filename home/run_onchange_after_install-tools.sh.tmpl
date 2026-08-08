@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Bootstrap CLI tools: mise + manifest tools + ble.sh.
+# Runs on `chezmoi apply`; re-runs automatically when the mise manifest
+# changes (its hash is embedded below by chezmoi's templating).
+# mise manifest sha256: {{ include "private_dot_config/mise/config.toml" | sha256sum }}
+set -euo pipefail
+
+log() { printf '[install-tools] %s\n' "$*"; }
+
+# 1. mise itself (installed to ~/.local/bin by the official installer).
+if ! command -v mise >/dev/null 2>&1 && [ ! -x "$HOME/.local/bin/mise" ]; then
+  log "installing mise"
+  curl -fsSL https://mise.run | sh
+else
+  log "mise already installed, skipping"
+fi
+export PATH="$HOME/.local/bin:$PATH"
+
+# 2. Tools from the manifest (~/.config/mise/config.toml, deployed by
+#    this same apply — this script runs after files are written).
+log "mise install"
+mise install --yes
+
+# 3. ble.sh — not available via mise, install from the nightly tarball.
+if [ ! -f "$HOME/.local/share/blesh/ble.sh" ]; then
+  log "installing ble.sh"
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT
+  wget -q -O - https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly.tar.xz | tar xJf - -C "$tmp"
+  bash "$tmp/ble-nightly/ble.sh" --install "$HOME/.local/share"
+  rm -rf "$tmp"
+  trap - EXIT
+else
+  log "ble.sh already installed, skipping"
+fi
+
+log "done"
