@@ -69,7 +69,10 @@ shell startup files. `chezmoi apply` runs
 2. runs `mise install` against the manifest in
    `home/private_dot_config/mise/config.toml` (go, rust, node, neovim,
    and other CLI tools — see the manifest for the current list),
-3. installs ble.sh (if missing — not available via mise).
+3. installs ble.sh (if missing — not available via mise),
+4. installs system packages that mise can't provide (gdb, strace,
+   ltrace, lldb, valgrind) via apt; skipped with a printed hint when
+   sudo credentials aren't available non-interactively.
 
 The script re-runs automatically whenever the manifest changes (its
 hash is embedded in the script via templating), so the upgrade path is:
