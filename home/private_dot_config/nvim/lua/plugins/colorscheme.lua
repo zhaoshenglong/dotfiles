@@ -13,6 +13,9 @@ return {
     lazy = true,
     name = "catppuccin",
     opts = {
+      -- explicit integrations below; auto-detection would call vim.pack.get()
+      -- on nvim 0.12, which creates site/pack/core and trips health warnings
+      auto_integrations = false,
       integrations = {
         aerial = true,
         alpha = true,
