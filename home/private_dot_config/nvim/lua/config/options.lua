@@ -5,6 +5,23 @@ vim.o.autoindent = true
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- Python 3 provider: dedicated venv (see :help provider-python), so the
+-- system Python stays untouched and mise upgrades can't break the path
+vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python")
+
+-- Perl provider: Neovim::Ext is installed user-locally via
+-- `cpanm --local-lib-contained ~/perl5` (system perl is unchanged).
+-- The MM/MB opts mark the local lib as "configured" so cpanm skips its
+-- non-root warning banner, which otherwise confuses :checkhealth parsing.
+vim.env.PERL5LIB = vim.fn.expand("~/perl5/lib/perl5")
+vim.env.PERL_LOCAL_LIB_ROOT = vim.fn.expand("~/perl5")
+vim.env.PERL_MM_OPT = "INSTALL_BASE=" .. vim.fn.expand("~/perl5")
+vim.env.PERL_MB_OPT = "--install_base " .. vim.fn.expand("~/perl5")
+
+-- Ruby provider: `gem install --user-install neovim` puts the host binary
+-- outside PATH (the 3.2.0 component tracks the ruby version)
+vim.g.ruby_host_prog = vim.fn.expand("~/.local/share/gem/ruby/3.2.0/bin/neovim-ruby-host")
+
 -- LoongVim auto format
 vim.g.autoformat = true
 

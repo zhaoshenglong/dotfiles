@@ -1,9 +1,18 @@
 # CLI tools managed by mise. Edit this file, then `chezmoi update` —
 # the run_onchange_install-tools script re-runs automatically when this
 # file changes.
+[settings]
+# dl.google.com is unreachable from this network; use a CN mirror
+# (golang.google.cn only mirrors metadata — tarballs 302 back to dl.google.com).
+# aliyun has the tarballs but no .sha256 files, so mise's checksum step is
+# skipped; verify new Go tarballs against golang.google.cn's .sha256 manually.
+go.download_mirror = "https://mirrors.aliyun.com/golang"
+go.skip_checksum = true
+
 [tools]
 rust = "stable"           # provides cargo; required by the cargo: backend
 go = "latest"             # replaces the old scripts/goupdate.sh manual installer
+uv = "latest"             # python package/venv manager (nvim python provider venv)
 neovim = "stable"         # the editor this config is for
 starship = "latest"
 fzf = "latest"
