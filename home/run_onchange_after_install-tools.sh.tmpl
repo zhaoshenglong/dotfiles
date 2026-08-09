@@ -42,4 +42,23 @@ else
   log "ble.sh already installed, skipping"
 fi
 
+# 4. System packages — not available via mise (real debuggers etc.).
+#    Needs sudo; on a fresh host `chezmoi apply` runs interactively so the
+#    password prompt just works. In non-interactive contexts without cached
+#    sudo credentials, skip with a hint instead of failing the apply.
+apt_packages=(gdb strace ltrace lldb valgrind)
+missing=()
+for pkg in "${apt_packages[@]}"; do
+  command -v "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
+done
+if [ "${#missing[@]}" -gt 0 ]; then
+  if sudo -n true 2>/dev/null; then
+    log "installing system packages: ${missing[*]}"
+    sudo apt-get update && sudo apt-get install -y "${missing[@]}"
+  else
+    log "SKIP: missing system packages (need sudo): ${missing[*]}"
+    log "      run: sudo apt-get install -y ${missing[*]}"
+  fi
+fi
+
 log "done"

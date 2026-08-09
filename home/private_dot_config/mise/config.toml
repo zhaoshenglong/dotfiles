@@ -13,3 +13,38 @@ lazygit = "latest"        # <leader>gg etc. in the nvim config
 delta = "latest"          # optional git previewer for fzf-lua
 "cargo:cloc" = "latest"
 "cargo:flamegraph" = "latest"
+
+# -- search / text / files ----------------------------------------------------
+ripgrep = "latest"        # rg: recursive grep
+fd = "latest"             # modern find
+bat = "latest"            # cat with syntax highlighting
+eza = "latest"            # modern ls
+jq = "latest"             # JSON processor
+yq = "latest"             # YAML/TOML/XML processor
+sd = "latest"             # modern sed
+choose = "latest"         # field/section cutter (human cut/awk)
+
+# -- dev workflow --------------------------------------------------------------
+just = "latest"           # command runner (make alternative)
+direnv = "latest"         # per-directory env vars
+gh = "latest"             # GitHub CLI; mise copy shadows the apt one
+shellcheck = "latest"     # shell linter (used by this repo's CI)
+shfmt = "latest"          # shell formatter
+ast-grep = "latest"       # structural code search/rewrite
+typos = "latest"          # spell checker for source
+tokei = "latest"          # code statistics
+watchexec = "latest"      # rerun commands on file change
+
+# -- debug / diagnostics -------------------------------------------------------
+hyperfine = "latest"      # command benchmarking
+hexyl = "latest"          # hex viewer (binary debugging)
+xh = "latest"             # HTTP client (curl/httpie alternative)
+doggo = "latest"          # dig alternative (DNS debugging)
+gping = "latest"          # ping with a graph
+dust = "latest"           # du alternative
+duf = "latest"            # df alternative
+bottom = "latest"         # htop alternative (btm)
+# not in the mise registry; compiled from crates.io like cloc/flamegraph
+"cargo:procs" = "latest"      # modern ps
+"cargo:bandwhich" = "latest"  # per-process network bandwidth
+"cargo:trippy" = "latest"     # traceroute+ping TUI; binary is `trip`
