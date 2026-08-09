@@ -287,6 +287,13 @@ set -g mouse off
 set -g status-keys vi
 set -g mode-keys vi
 
+# pass through modified keys (Shift-Enter, Ctrl-Enter, ...) to applications,
+# e.g. Shift-Enter for newline in CLI tools (requires tmux >= 3.2)
+%if #{>=:#{version},3.2}
+set -g extended-keys on
+set -as terminal-features ',xterm-256color:extkeys'
+%endif
+
 
 # if you don't want Oh my tmux! to alter a binding, use #!important
 # bind c new-window -c '#{pane_current_path}' #!important
