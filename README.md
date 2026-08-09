@@ -67,8 +67,8 @@ shell startup files. `chezmoi apply` runs
 
 1. installs mise itself to `~/.local/bin` (if missing),
 2. runs `mise install` against the manifest in
-   `home/private_dot_config/mise/config.toml` (rust, starship, fzf,
-   cloc, flamegraph),
+   `home/private_dot_config/mise/config.toml` (go, rust, node, neovim,
+   and other CLI tools — see the manifest for the current list),
 3. installs ble.sh (if missing — not available via mise).
 
 The script re-runs automatically whenever the manifest changes (its
